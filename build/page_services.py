@@ -76,19 +76,16 @@ def build_hub():
     ) for i, s in enumerate(SERVICES))
 
     html = [L.head(page), L.header("/services/")]
-    html.append("""<div class="page-head">
-  {crumbs}
-  <div class="wrap page-head-inner">
-    <span class="eyebrow">Craigieburn · Melbourne’s north</span>
-    <h1>Gardening Services Melbourne — Lawn, Hedge &amp; Grounds Care</h1>
-    <p class="lede">Green Fern Gardening Services covers the full round: lawn mowing, hedge trimming, weed control, garden maintenance, soft landscaping and tree removal. One contractor, one schedule, one invoice — across Craigieburn, Epping, Reservoir, Preston and the rest of Melbourne’s northern suburbs.</p>
-    <div class="btn-row" style="margin-top:24px">
-      <a class="btn btn--call" href="tel:{e164}">Call {phone}</a>
-      <a class="btn btn--ghost" href="/contact/">Get a free quote</a>
-    </div>
-  </div>
-</div>
-""".format(crumbs=L.breadcrumbs(trail), e164=PHONE_E164, phone=PHONE))
+    html.append(L.page_head(
+        trail,
+        "Craigieburn · Melbourne’s north",
+        "Gardening Services Melbourne — Lawn, Hedge &amp; Grounds Care",
+        "Green Fern Gardening Services covers the full round: lawn mowing, hedge trimming, weed control, "
+        "garden maintenance, soft landscaping and tree removal. One contractor, one schedule, one invoice — "
+        "across Craigieburn, Epping, Reservoir, Preston and the rest of Melbourne’s northern suburbs.",
+        '<button class="btn btn--call" type="button" data-modal-open="quote-modal">Get a free quote</button>'
+        '<a class="btn btn--ghost" href="tel:%s">Call %s</a>' % (PHONE_E164, PHONE),
+        bg_photo="photo6"))
 
     html.append('<main id="main">\n')
     html.append("""<section class="section">
@@ -140,7 +137,6 @@ def build_hub():
         "Tell us what the property looks like now and what you want it to look like. "
         "We will tell you which services actually get you there — and which you can skip."))
     html.append("</main>\n")
-    html.append(L.call_bar())
     html.append(L.footer())
     html.append(L.tail())
     return "".join(html)
@@ -197,20 +193,11 @@ def build_service(s, body_fn):
         for i, o in enumerate(others))
 
     html = [L.head(page), L.header("/services/%s/" % s["slug"])]
-    html.append("""<div class="page-head">
-  {crumbs}
-  <div class="wrap page-head-inner">
-    <span class="eyebrow">{eyebrow}</span>
-    <h1>{h1}</h1>
-    <p class="lede">{lede}</p>
-    <div class="btn-row" style="margin-top:24px">
-      <a class="btn btn--call" href="tel:{e164}">Call {phone}</a>
-      <a class="btn btn--ghost" href="/contact/?service={slug}">Get a free quote</a>
-    </div>
-  </div>
-</div>
-""".format(crumbs=L.breadcrumbs(trail), eyebrow=body_fn.eyebrow, h1=s["h1"],
-           lede=body_fn.lede, e164=PHONE_E164, phone=PHONE, slug=s["slug"]))
+    html.append(L.page_head(
+        trail, body_fn.eyebrow, s["h1"], body_fn.lede,
+        '<button class="btn btn--call" type="button" data-modal-open="quote-modal">Get a free quote</button>'
+        '<a class="btn btn--ghost" href="tel:%s">Call %s</a>' % (PHONE_E164, PHONE),
+        bg_photo=s["photo"]))
 
     html.append('<main id="main">\n')
     html.append(body_fn.body)
@@ -232,7 +219,6 @@ def build_service(s, body_fn):
 
     html.append(L.cta_band(body_fn.cta_heading, body_fn.cta_body, service=s["slug"]))
     html.append("</main>\n")
-    html.append(L.call_bar())
     html.append(L.footer())
     html.append(L.tail())
     return "".join(html)

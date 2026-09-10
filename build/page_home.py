@@ -18,6 +18,10 @@ ICONS = {
 
 SERVICE_ICONS = ["mow", "hedge", "garden", "land", "tree"]
 
+# Marquee content. Rendered twice so the loop is seamless; CSS hides the
+# duplicate from assistive tech via the wrapper's aria-hidden.
+TICKER = """<span class="ticker-item">Day-before SMS reminders</span><span class="ticker-item">$10M public liability</span><span class="ticker-item">Working With Children Checks</span><span class="ticker-item">Owner-answered phone</span><span class="ticker-item">Fixed price per visit</span><span class="ticker-item">JSEA & SWMS on commercial sites</span><span class="ticker-item">Same crew every visit</span><span class="ticker-item">Green waste taken away</span>"""
+
 
 def build():
     trail = [("Home", "/")]
@@ -88,29 +92,30 @@ def build():
     # ---- Hero ----
     html.append("""<section class="hero">
   <div class="wrap hero-inner">
-    <div>
+    <div class="hero-copy">
       <span class="eyebrow">Craigieburn · Melbourne’s northern suburbs</span>
       <h1>Lawn Mowing &amp; Garden Maintenance Craigieburn</h1>
       <p class="hero-sub">Grounds care that shows up. Every time.</p>
       <p class="lede">Green Fern Gardening Services is the lawn mowing Craigieburn households, childcare centres, schools and strata book when they want it handled rather than chased. Scheduled visits across Craigieburn, Epping, Lalor and Melbourne’s north — a set visit day, a day-before SMS, and the same crew every time.</p>
-      <div class="btn-row" style="margin-top:26px">
+      <div class="btn-row btn-row--split">
         <a class="btn btn--call" href="tel:{e164}">Call {phone}</a>
-        <a class="btn btn--primary" href="/contact/">Get a free quote</a>
+        <button class="btn btn--primary" type="button" data-modal-open="quote-modal">Get a free quote</button>
       </div>
-      <ul class="hero-badges">
-        <li>Day-before SMS reminders</li>
-        <li>$10M public liability</li>
-        <li>Working With Children Checks</li>
-        <li>Owner-answered phone</li>
-      </ul>
     </div>
     <div class="hero-media">
       <img src="{hero}" width="900" height="675" fetchpriority="high" decoding="async"
            alt="Green Fern Gardening Services mowing a residential lawn in Craigieburn, Melbourne">
     </div>
   </div>
+  <div class="ticker" aria-label="What every Green Fern client gets">
+    <div class="ticker-track">
+      <div class="ticker-run">{ticker}</div>
+      <div class="ticker-run" aria-hidden="true">{ticker}</div>
+    </div>
+  </div>
 </section>
-""".format(e164=PHONE_E164, phone=PHONE, hero=img("photo1", 900)))
+""".format(e164=PHONE_E164, phone=PHONE, hero=img("photo1", 900),
+           ticker=TICKER))
 
     # ---- Trust strip ----
     html.append("""<section class="trust-strip">
@@ -293,7 +298,6 @@ def build():
         "Craigieburn, Epping, Lalor, Reservoir, Preston and across Melbourne’s north."))
 
     html.append("</main>\n")
-    html.append(L.call_bar())
     html.append(L.footer())
     html.append(L.tail())
     return "".join(html)

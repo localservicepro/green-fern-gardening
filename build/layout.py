@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
 """Page shell: <head>, header (with the services hover dropdown), footer."""
 
-from gfdata import (SITE_URL, BUSINESS, PHONE, PHONE_E164, EMAIL, ABN, STREET, SUBURB,
-                    STATE, POSTCODE, SUBURBS, SERVICES, GHL_TRACKING_ID, GHL_TRACKING_SRC,
+from forms import quote_modal
+from gfdata import (SITE_URL, BUSINESS, PHONE, PHONE_E164, EMAIL, ABN, ADDRESS_PUBLIC,
+                    SUBURBS, SERVICES, GHL_TRACKING_ID, GHL_TRACKING_SRC,
                     img, jsonld)
 
 # Critical CSS: everything needed to paint the header and hero without waiting
@@ -35,7 +36,17 @@ p{margin:0 0 1.1em}
 .nav-toggle span::before{top:-6px}.nav-toggle span::after{top:6px}
 .site-nav{position:fixed;inset:70px 0 0;background:#fff;padding:8px var(--gutter) 32px;overflow-y:auto;opacity:0;visibility:hidden}
 .site-nav ul{list-style:none;margin:0;padding:0}
-.nav-header-cta{display:none}
+.nav-header-cta{display:inline-flex;flex:0 0 auto;padding:13px 18px;min-height:46px;font-size:.94rem}
+.nav-cta-full{display:none}.nav-cta-short{display:inline}
+.btn-row--split{display:flex;gap:10px;margin-top:22px}
+.btn-row--split .btn{flex:1 1 0;min-width:0;padding-inline:14px;font-size:.95rem;white-space:nowrap}
+.ticker{position:relative;z-index:2;overflow:hidden;background:rgba(255,255,255,.04);border-top:1px solid rgba(255,255,255,.12);border-bottom:1px solid rgba(255,255,255,.12)}
+.ticker-track{display:flex;width:max-content}.ticker-run{display:flex;flex:0 0 auto}
+.ticker-item{display:inline-flex;align-items:center;gap:9px;flex:0 0 auto;padding:14px 26px;font-size:.9rem;font-weight:600;color:#d7e9df;white-space:nowrap}
+.page-head.has-bg{background-size:cover;background-position:center}
+.page-head.has-bg::before{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(13,43,29,.93),rgba(13,43,29,.95))}
+.page-head-inner{display:grid;gap:30px}
+[hidden]{display:none!important}
 .hero{position:relative;overflow:hidden;background:var(--fern-900);color:#cfe3d8}
 .hero-inner{position:relative;z-index:2;display:grid;gap:32px;padding-block:clamp(2.5rem,8vw,4.75rem)}
 .hero h1{color:#fff}
@@ -51,8 +62,12 @@ p{margin:0 0 1.1em}
 .btn-row{display:flex;flex-wrap:wrap;gap:12px}
 [data-reveal]{opacity:0}
 .no-js [data-reveal]{opacity:1}
+@media (max-width:899px){.hero-inner{gap:20px;padding-block:1.7rem 1.5rem}.hero h1{font-size:clamp(1.8rem,7.4vw,2.4rem)}.hero-media{aspect-ratio:16/10}.hero-copy{display:flex;flex-direction:column}.hero-copy .btn-row--split{order:4;margin-top:4px}.hero-copy .lede{order:5;margin:18px 0 0}}
+@media (max-width:479px){.header-inner{gap:9px}.brand{gap:8px}.brand-mark{height:34px}.brand-name{font-size:.95rem}.brand-tag{display:none}.nav-toggle{width:44px;height:44px}.nav-header-cta{padding:12px 15px;min-height:44px;font-size:.9rem}}
+@media (max-width:359px){.brand-text{display:none}}
 @media (min-width:900px){.hero-inner{grid-template-columns:1.05fr .95fr;align-items:center;gap:52px;padding-block:clamp(3.5rem,7vw,6rem)}}
-@media (min-width:1000px){.nav-toggle{display:none}.site-nav{position:static;inset:auto;padding:0;overflow:visible;opacity:1;visibility:visible;flex:0 0 auto}.site-nav>ul{display:flex;align-items:center;gap:4px}.nav-header-cta{display:inline-flex;flex:0 0 auto;margin-left:10px}}
+@media (min-width:960px){.page-head-inner{grid-template-columns:1.02fr .98fr;align-items:center;gap:48px}}
+@media (min-width:1000px){.nav-toggle{display:none}.site-nav{position:static;inset:auto;padding:0;overflow:visible;opacity:1;visibility:visible;flex:0 0 auto}.site-nav>ul{display:flex;align-items:center;gap:4px}.site-nav .nav-cta{display:none}.nav-header-cta{margin-left:10px;padding:16px 26px;min-height:52px;font-size:1rem}.nav-cta-full{display:inline}.nav-cta-short{display:none}}
 @media (prefers-reduced-motion:reduce){[data-reveal]{opacity:1}}
 """
 
@@ -189,11 +204,13 @@ def header(current=""):
         </li>
         {about}
         {contact}
-        <li class="nav-cta"><a class="btn btn--primary btn--block" href="/contact/">Get a free quote</a></li>
+        <li class="nav-cta"><a class="btn btn--call btn--block" href="tel:{phone_e164}">Call {phone}</a></li>
       </ul>
     </nav>
 
-    <a class="btn btn--primary nav-header-cta" href="tel:{phone_e164}">Call {phone}</a>
+    <button class="btn btn--primary nav-header-cta" type="button" data-modal-open="quote-modal">
+      <span class="nav-cta-full">Get a free quote</span><span class="nav-cta-short">Free quote</span>
+    </button>
   </div>
 </header>
 """.format(
@@ -208,19 +225,6 @@ def header(current=""):
         phone=PHONE,
     )
 
-
-def call_bar():
-    return """<div class="call-bar" aria-label="Quick contact">
-  <a class="cb-call" href="tel:{e164}">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 1.9.7 2.8a2 2 0 0 1-.5 2.1L8.1 9.9a16 16 0 0 0 6 6l1.3-1.2a2 2 0 0 1 2.1-.5c.9.3 1.8.6 2.8.7a2 2 0 0 1 1.7 2Z"/></svg>
-    Call {phone}
-  </a>
-  <a href="/contact/">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 4h16v16H4z"/><path d="m4 7 8 6 8-6"/></svg>
-    Free quote
-  </a>
-</div>
-""".format(e164=PHONE_E164, phone=PHONE)
 
 
 def footer():
@@ -264,7 +268,7 @@ def footer():
         <ul>
           <li><a href="tel:{e164}">{phone}</a></li>
           <li><a href="mailto:{email}">{email}</a></li>
-          <li>{street}, {suburb} {state} {postcode}</li>
+          <li>{address}</li>
           <li>Mon–Fri 7am–5pm · Sat 8am–1pm</li>
         </ul>
       </div>
@@ -284,17 +288,39 @@ def footer():
 """.format(
         business=BUSINESS, owner="Marty Searle", mark=BRAND_MARK,
         service_links=service_links, e164=PHONE_E164, phone=PHONE, email=EMAIL,
-        street=STREET, suburb=SUBURB, state=STATE, postcode=POSTCODE,
-        areas=areas, abn=ABN,
+        address=ADDRESS_PUBLIC, areas=areas, abn=ABN,
     )
 
 
 def tail():
-    return """<script src="/assets/js/config.js" defer></script>
+    return quote_modal() + """<script src="/assets/js/config.js" defer></script>
 <script src="/assets/js/site.js" defer></script>
 </body>
 </html>
 """
+
+
+def page_head(trail, eyebrow, h1, lede, buttons, bg_photo=None, extra=""):
+    """Dark page header. bg_photo lays the client's photography behind the overlay."""
+    bg = ""
+    style = ""
+    if bg_photo:
+        bg = ' has-bg'
+        style = ' style="background-image:url(\'%s\')"' % img(bg_photo, 1600)
+    return """<div class="page-head{bg}"{style}>
+  {crumbs}
+  <div class="wrap page-head-inner">
+    <div class="page-head-copy">
+      <span class="eyebrow">{eyebrow}</span>
+      <h1>{h1}</h1>
+      <p class="lede">{lede}</p>
+      <div class="btn-row" style="margin-top:24px">{buttons}</div>
+    </div>
+    {extra}
+  </div>
+</div>
+""".format(bg=bg, style=style, crumbs=breadcrumbs(trail), eyebrow=eyebrow, h1=h1,
+           lede=lede, buttons=buttons, extra=extra)
 
 
 def breadcrumbs(trail):

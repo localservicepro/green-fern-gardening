@@ -115,8 +115,14 @@ hr{border:0;border-top:1px solid var(--line);margin:2.5rem 0}
 .btn--call:hover{background:#f7c95f;color:var(--fern-900)}
 .btn--ghost{background:transparent;color:var(--fern-700);border-color:var(--line-2)}
 .btn--ghost:hover{background:var(--fern-50);color:var(--fern-700);border-color:var(--fern-400)}
-.section--deep .btn--ghost{color:#fff;border-color:rgba(255,255,255,.32)}
-.section--deep .btn--ghost:hover{background:rgba(255,255,255,.1);color:#fff}
+.section--deep .btn--ghost,
+.cta-band .btn--ghost,
+.page-head .btn--ghost,
+.hero .btn--ghost{color:#fff;border-color:rgba(255,255,255,.45)}
+.section--deep .btn--ghost:hover,
+.cta-band .btn--ghost:hover,
+.page-head .btn--ghost:hover,
+.hero .btn--ghost:hover{background:rgba(255,255,255,.14);color:#fff;border-color:#fff}
 .btn--block{width:100%}
 .btn-row{display:flex;flex-wrap:wrap;gap:12px}
 
@@ -170,7 +176,11 @@ hr{border:0;border-top:1px solid var(--line);margin:2.5rem 0}
   display:block;padding:16px 4px;font-weight:600;font-size:1.05rem;color:var(--ink);
 }
 .site-nav a[aria-current="page"]{color:var(--fern-600)}
-.nav-header-cta{display:none}
+.nav-header-cta{
+  display:inline-flex;flex:0 0 auto;padding:13px 18px;min-height:46px;font-size:.94rem;
+}
+.nav-cta-full{display:none}
+.nav-cta-short{display:inline}
 
 .has-dropdown > .dropdown-trigger{
   display:flex;align-items:center;justify-content:space-between;width:100%;
@@ -238,7 +248,9 @@ hr{border:0;border-top:1px solid var(--line);margin:2.5rem 0}
   .dropdown .dd-all{grid-column:1 / -1;margin-top:4px;border-top:1px solid var(--line);padding-top:8px}
   .dropdown .dd-all a{color:var(--fern-600)}
   .site-nav .nav-cta{display:none}
-  .nav-header-cta{display:inline-flex;flex:0 0 auto;margin-left:10px}
+  .nav-header-cta{margin-left:10px;padding:16px 26px;min-height:52px;font-size:1rem}
+  .nav-cta-full{display:inline}
+  .nav-cta-short{display:none}
 }
 
 /* ---------- Hero ---------- */
@@ -452,24 +464,6 @@ hr{border:0;border-top:1px solid var(--line);margin:2.5rem 0}
 .gallery img{width:100%;aspect-ratio:4/3;object-fit:cover;transition:transform .55s var(--ease)}
 .gallery figure:hover img{transform:scale(1.06)}
 
-/* ---------- Sticky mobile call bar ---------- */
-.call-bar{
-  position:fixed;left:0;right:0;bottom:0;z-index:90;
-  display:grid;grid-template-columns:1fr 1fr;gap:1px;
-  background:var(--line);border-top:1px solid var(--line);
-  box-shadow:0 -4px 20px rgba(13,43,29,.12);
-  transform:translateY(100%);transition:transform .3s var(--ease);
-}
-.call-bar.is-visible{transform:none}
-.call-bar a{
-  display:flex;align-items:center;justify-content:center;gap:8px;
-  padding:15px 10px;font-weight:700;font-size:.98rem;background:#fff;color:var(--fern-800);min-height:56px;
-}
-.call-bar a.cb-call{background:var(--fern-600);color:#fff}
-.call-bar svg{width:18px;height:18px;flex:0 0 auto}
-@media (min-width:1000px){.call-bar{display:none}}
-body{padding-bottom:0}
-@media (max-width:999px){body.has-call-bar{padding-bottom:57px}}
 
 /* ---------- Footer ---------- */
 .site-footer{background:var(--fern-900);color:#9fbfaf;padding-block:52px 0;font-size:.95rem}
@@ -514,3 +508,115 @@ body{padding-bottom:0}
 .brand-mark{height:44px;width:auto;flex:0 0 auto;color:var(--fern-600);transition:color .2s var(--ease)}
 .brand:hover .brand-mark{color:var(--fern-500)}
 .site-footer .brand-mark{height:38px;color:var(--fern-300)}
+
+/* ---------- Page head with photographic background ---------- */
+.page-head.has-bg{background-size:cover;background-position:center;background-repeat:no-repeat}
+.page-head.has-bg::before{
+  content:"";position:absolute;inset:0;
+  background:linear-gradient(100deg,rgba(13,43,29,.96) 0%,rgba(13,43,29,.88) 46%,rgba(13,43,29,.66) 100%);
+}
+.page-head.has-bg::after{
+  background:radial-gradient(ellipse 60% 70% at 88% 12%,rgba(77,164,122,.24),transparent 62%);
+}
+@media (max-width:899px){
+  .page-head.has-bg::before{background:linear-gradient(180deg,rgba(13,43,29,.93) 0%,rgba(13,43,29,.95) 100%)}
+}
+
+/* Contact page: the form sits in the hero. */
+.page-head-form .form-card{background:#fff;color:var(--ink-2);box-shadow:var(--shadow-lg)}
+.page-head-inner{display:grid;gap:30px}
+@media (min-width:960px){
+  .page-head-inner{grid-template-columns:1.02fr .98fr;align-items:center;gap:48px}
+  .page-head-inner .page-head-copy{max-width:58ch}
+}
+.form-heading{font-size:1.45rem;margin-bottom:.35em}
+.form-intro{font-size:.97rem;margin-bottom:1.3em}
+
+/* ---------- Trust ticker ---------- */
+.ticker{
+  position:relative;z-index:2;overflow:hidden;
+  border-top:1px solid rgba(255,255,255,.12);border-bottom:1px solid rgba(255,255,255,.12);
+  background:rgba(255,255,255,.04);
+  -webkit-mask-image:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent);
+  mask-image:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent);
+}
+.ticker-track{display:flex;width:max-content;animation:tickerScroll 38s linear infinite}
+.ticker:hover .ticker-track,.ticker:focus-within .ticker-track{animation-play-state:paused}
+.ticker-run{display:flex;flex:0 0 auto}
+.ticker-item{
+  display:inline-flex;align-items:center;gap:9px;flex:0 0 auto;
+  padding:14px 26px;font-size:.9rem;font-weight:600;color:#d7e9df;white-space:nowrap;
+}
+.ticker-item::before{
+  content:"";width:6px;height:6px;border-radius:50%;background:var(--fern-300);flex:0 0 auto;
+}
+@keyframes tickerScroll{from{transform:translate3d(0,0,0)}to{transform:translate3d(-50%,0,0)}}
+@media (prefers-reduced-motion:reduce){
+  .ticker-track{animation:none;width:100%;overflow-x:auto;scrollbar-width:none}
+  .ticker-track::-webkit-scrollbar{display:none}
+  .ticker-run:last-child{display:none}
+}
+
+/* ---------- Quote modal ---------- */
+.modal{position:fixed;inset:0;z-index:200;display:flex;align-items:flex-end;justify-content:center}
+@media (min-width:700px){.modal{align-items:center}}
+.modal-backdrop{position:absolute;inset:0;background:rgba(9,26,18,.62);backdrop-filter:blur(3px);opacity:0;transition:opacity .25s var(--ease)}
+.modal.is-open .modal-backdrop{opacity:1}
+.modal-panel{
+  position:relative;background:#fff;width:100%;max-width:620px;
+  max-height:92dvh;overflow-y:auto;-webkit-overflow-scrolling:touch;
+  border-radius:22px 22px 0 0;box-shadow:var(--shadow-lg);
+  transform:translateY(24px);opacity:0;
+  transition:transform .3s var(--ease),opacity .25s var(--ease);
+}
+@media (min-width:700px){.modal-panel{border-radius:var(--radius-lg);max-height:88dvh;transform:translateY(16px) scale(.98)}}
+.modal.is-open .modal-panel{transform:none;opacity:1}
+.modal-body{padding:clamp(22px,4vw,34px)}
+.modal-form{border:0;padding:0;box-shadow:none;background:none}
+.modal-close{
+  position:absolute;top:12px;right:12px;z-index:2;
+  width:42px;height:42px;border-radius:50%;border:1px solid var(--line);
+  background:#fff;color:var(--ink-2);cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  transition:background-color .2s var(--ease),color .2s var(--ease);
+}
+.modal-close:hover{background:var(--fern-50);color:var(--fern-700)}
+.modal-close svg{width:19px;height:19px}
+body.modal-open{overflow:hidden}
+
+/* ---------- Mobile hero density ---------- */
+.btn-row--split{display:flex;gap:10px;margin-top:22px}
+.btn-row--split .btn{flex:1 1 0;min-width:0;padding-inline:14px;font-size:.95rem;white-space:nowrap}
+@media (min-width:560px){
+  .btn-row--split{gap:12px;margin-top:26px}
+  .btn-row--split .btn{flex:0 1 auto;padding-inline:26px;font-size:1rem}
+}
+@media (max-width:899px){
+  .hero-inner{gap:20px;padding-block:1.7rem 1.5rem}
+  .hero h1{font-size:clamp(1.8rem,7.4vw,2.4rem)}
+  .hero .lede{font-size:.97rem;line-height:1.55}
+  .hero-sub{font-size:.95rem;margin:-.2rem 0 .2rem}
+  .hero .eyebrow{margin-bottom:9px;font-size:.64rem}
+  .hero-media{aspect-ratio:16/10}
+  .ticker-item{padding:12px 20px;font-size:.85rem}
+
+  /* Lift the CTAs above the intro paragraph so they land in the first screen.
+     DOM order is unchanged — only the visual order moves. */
+  .hero-copy{display:flex;flex-direction:column}
+  .hero-copy .btn-row--split{order:4;margin-top:4px}
+  .hero-copy .lede{order:5;margin:18px 0 0}
+}
+
+/* Header has to fit a burger and a CTA next to the wordmark on small phones. */
+@media (max-width:479px){
+  .header-inner{gap:9px}
+  .brand{gap:8px}
+  .brand-mark{height:34px}
+  .brand-name{font-size:.95rem}
+  .brand-tag{display:none}
+  .nav-toggle{width:44px;height:44px}
+  .nav-header-cta{padding:12px 15px;min-height:44px;font-size:.9rem}
+}
+@media (max-width:359px){
+  .brand-text{display:none}
+}

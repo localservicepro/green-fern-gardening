@@ -14,6 +14,10 @@ STREET = "101 Dianne Ave"
 SUBURB = "Craigieburn"
 STATE = "VIC"
 POSTCODE = "3064"
+# Shown on the page. The full street address stays in the LocalBusiness JSON-LD
+# below so crawlers and AI answer engines still get the complete NAP.
+ADDRESS_PUBLIC = "Craigieburn VIC 3064"
+
 LAT = "-37.5991"
 LON = "144.9407"
 

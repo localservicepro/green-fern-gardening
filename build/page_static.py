@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
 """About, Contact and Thank You pages."""
 
-from gfdata import (SITE_URL, BUSINESS, OWNER, PHONE, PHONE_E164, EMAIL, ABN, STREET,
-                    SUBURB, STATE, POSTCODE, SUBURBS, SERVICES, TESTIMONIALS,
+from forms import quote_form
+from gfdata import (SITE_URL, BUSINESS, OWNER, PHONE, PHONE_E164, EMAIL, ABN,
+                    ADDRESS_PUBLIC, SUBURBS, SERVICES, TESTIMONIALS,
                     img, local_business_node)
 import layout as L
 
@@ -65,19 +66,14 @@ def build_about():
         for i, t in enumerate(TESTIMONIALS))
 
     html = [L.head(page), L.header("/about/")]
-    html.append("""<div class="page-head">
-  {crumbs}
-  <div class="wrap page-head-inner">
-    <span class="eyebrow">Craigieburn VIC 3064</span>
-    <h1>About Green Fern Gardening Services</h1>
-    <p class="lede">Owner-operated grounds maintenance for Melbourne’s northern corridor. Founded and run by {owner} from Craigieburn, working for homes, childcare centres, schools, strata properties and commercial grounds across eleven suburbs.</p>
-    <div class="btn-row" style="margin-top:24px">
-      <a class="btn btn--call" href="tel:{e164}">Call {phone}</a>
-      <a class="btn btn--ghost" href="/contact/">Get a free quote</a>
-    </div>
-  </div>
-</div>
-""".format(crumbs=L.breadcrumbs(trail), owner=OWNER, e164=PHONE_E164, phone=PHONE))
+    html.append(L.page_head(
+        trail, "Craigieburn VIC 3064", "About Green Fern Gardening Services",
+        "Owner-operated grounds maintenance for Melbourne’s northern corridor. Founded and run by %s "
+        "from Craigieburn, working for homes, childcare centres, schools, strata properties and "
+        "commercial grounds across eleven suburbs." % OWNER,
+        '<button class="btn btn--call" type="button" data-modal-open="quote-modal">Get a free quote</button>'
+        '<a class="btn btn--ghost" href="tel:%s">Call %s</a>' % (PHONE_E164, PHONE),
+        bg_photo="photo6"))
 
     html.append('<main id="main">\n')
     html.append("""<section class="section">
@@ -136,7 +132,7 @@ def build_about():
           <li><div><span class="cl">Trading name</span><span class="cv">{business}</span></div></li>
           <li><div><span class="cl">Owner</span><span class="cv">{owner}</span></div></li>
           <li><div><span class="cl">ABN</span><span class="cv">{abn}</span></div></li>
-          <li><div><span class="cl">Base</span><span class="cv">{street}, {suburb} {state} {postcode}</span></div></li>
+          <li><div><span class="cl">Base</span><span class="cv">{address}</span></div></li>
         </ul>
       </div>
       <div class="card" data-reveal data-reveal-delay="1">
@@ -150,8 +146,8 @@ def build_about():
     </div>
   </div>
 </section>
-""".format(business=BUSINESS, owner=OWNER, abn=ABN, street=STREET, suburb=SUBURB,
-           state=STATE, postcode=POSTCODE, e164=PHONE_E164, phone=PHONE, email=EMAIL))
+""".format(business=BUSINESS, owner=OWNER, abn=ABN, address=ADDRESS_PUBLIC,
+           e164=PHONE_E164, phone=PHONE, email=EMAIL))
 
     html.append("""<section class="section section--tint" id="reviews">
   <div class="wrap">
@@ -172,92 +168,12 @@ def build_about():
         "Talk to Marty directly",
         "No call centre, no quote portal. Call and speak to the person who runs the crew."))
     html.append("</main>\n")
-    html.append(L.call_bar())
     html.append(L.footer())
     html.append(L.tail())
     return "".join(html)
 
 
 # ---------------------------------------------------------------- contact
-
-QUOTE_FORM = """      <form class="form-card" id="quote-form" data-thank-you="/thank-you/" novalidate>
-        <h2 style="font-size:1.5rem">Request your free quote</h2>
-        <p style="font-size:.97rem">Tell us about the property and we will book a walkthrough. Most quotes go out within one business day.</p>
-
-        <!-- Honeypot: hidden from people, filled by bots. -->
-        <div class="hp-field" aria-hidden="true">
-          <label for="company_website">Leave this field empty</label>
-          <input type="text" id="company_website" name="company_website" tabindex="-1" autocomplete="off">
-        </div>
-
-        <div class="field">
-          <label for="full_name">Full name <span class="req" aria-hidden="true">*</span></label>
-          <input type="text" id="full_name" name="full_name" autocomplete="name" required
-                 placeholder="Marty Searle">
-          <span class="err" role="alert">This field is required.</span>
-        </div>
-
-        <div class="field-row">
-          <div class="field">
-            <label for="email">Email <span class="req" aria-hidden="true">*</span></label>
-            <input type="email" id="email" name="email" autocomplete="email" inputmode="email" required
-                   placeholder="you@example.com.au">
-            <span class="err" role="alert">This field is required.</span>
-          </div>
-          <div class="field">
-            <label for="phone">Phone <span class="req" aria-hidden="true">*</span></label>
-            <input type="tel" id="phone" name="phone" autocomplete="tel" inputmode="tel" required
-                   placeholder="0400 000 000">
-            <span class="err" role="alert">This field is required.</span>
-          </div>
-        </div>
-
-        <div class="field">
-          <label for="property_address">Property address <span class="req" aria-hidden="true">*</span></label>
-          <input type="text" id="property_address" name="property_address" autocomplete="street-address" required
-                 placeholder="12 Example Street, Craigieburn VIC 3064">
-          <span class="hint">The address we would be attending, if it differs from your billing address.</span>
-          <span class="err" role="alert">This field is required.</span>
-        </div>
-
-        <div class="field-row">
-          <div class="field">
-            <label for="property_size">Property size</label>
-            <select id="property_size" name="property_size">
-              <option value="">Select a size</option>
-              <option value="Small (under 300sqm)">Small — under 300sqm</option>
-              <option value="Medium (300-700sqm)">Medium — 300–700sqm</option>
-              <option value="Large (700sqm-1 acre)">Large — 700sqm to 1 acre</option>
-              <option value="Acreage (1 acre+)">Acreage — 1 acre or more</option>
-              <option value="Commercial or multi-site">Commercial or multi-site</option>
-              <option value="Not sure">Not sure</option>
-            </select>
-          </div>
-          <div class="field">
-            <label for="service_needed">Service needed <span class="req" aria-hidden="true">*</span></label>
-            <select id="service_needed" name="service_needed" required>
-              <option value="">Select a service</option>
-{service_options}
-              <option value="Weed Control">Weed control</option>
-              <option value="Multiple Services">Multiple services</option>
-              <option value="Not sure">Not sure yet</option>
-            </select>
-            <span class="err" role="alert">This field is required.</span>
-          </div>
-        </div>
-
-        <div class="field">
-          <label for="job_notes">Job notes</label>
-          <textarea id="job_notes" name="job_notes" rows="5"
-                    placeholder="How often you would like visits, gate or pet access, anything that has been left too long, and any site requirements."></textarea>
-          <span class="hint">The more detail here, the more accurate the quote.</span>
-        </div>
-
-        <button class="btn btn--primary btn--block" type="submit">Get my free quote</button>
-        <div class="form-status" role="status" aria-live="polite"></div>
-        <p class="form-note">We use your details to prepare your quote and contact you about it. No marketing lists, no sharing with third parties. Prefer to talk? Call <a href="tel:{e164}">{phone}</a>.</p>
-      </form>"""
-
 
 def build_contact():
     trail = [("Home", "/"), ("Contact", "/contact/")]
@@ -286,31 +202,24 @@ def build_contact():
         }],
     }
 
-    service_options = "\n".join(
-        '              <option value="%s">%s</option>' % (s["nav"], s["nav"]) for s in SERVICES)
-    form = QUOTE_FORM.format(service_options=service_options, e164=PHONE_E164, phone=PHONE)
 
     html = [L.head(page), L.header("/contact/")]
-    html.append("""<div class="page-head">
-  {crumbs}
-  <div class="wrap page-head-inner">
-    <span class="eyebrow">Free on-site walkthrough</span>
-    <h1>Contact Green Fern Gardening Services</h1>
-    <p class="lede">Lawn mowing and garden maintenance quotes across Craigieburn, Epping, Lalor, Reservoir, Preston and the rest of Melbourne’s north. Call {owner} directly, or send the form and we will come and look at the property.</p>
-    <div class="btn-row" style="margin-top:24px">
-      <a class="btn btn--call" href="tel:{e164}">Call {phone}</a>
-      <a class="btn btn--ghost" href="mailto:{email}">Email {email}</a>
-    </div>
-  </div>
-</div>
-""".format(crumbs=L.breadcrumbs(trail), owner="Marty", e164=PHONE_E164, phone=PHONE, email=EMAIL))
+    html.append(L.page_head(
+        trail, "Free on-site walkthrough", "Contact Green Fern Gardening Services",
+        "Lawn mowing and garden maintenance quotes across Craigieburn, Epping, Lalor, Reservoir, "
+        "Preston and the rest of Melbourne’s north. Fill in the form and we will come and look at "
+        "the property, or call Marty directly.",
+        '<a class="btn btn--call" href="tel:%s">Call %s</a>' % (PHONE_E164, PHONE),
+        bg_photo="photo2",
+        extra='<div class="page-head-form">%s</div>' % quote_form(
+            "qf-hero", heading="Request your free quote",
+            intro="Most quotes go out within one business day.")))
 
     html.append('<main id="main">\n')
     html.append("""<section class="section">
   <div class="wrap">
-    <div class="split">
-{form}
-      <div data-reveal data-reveal-delay="1">
+    <div class="grid grid--2">
+      <div data-reveal>
         <span class="eyebrow">Direct contact</span>
         <h2>Speak to Marty, not a call centre</h2>
         <ul class="contact-list">
@@ -324,36 +233,34 @@ def build_contact():
           </li>
           <li>
             <span class="ci"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg></span>
-            <div><span class="cl">Based at</span><span class="cv">{street}, {suburb} {state} {postcode}</span></div>
+            <div><span class="cl">Based at</span><span class="cv">{address}</span></div>
           </li>
           <li>
             <span class="ci"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></span>
             <div><span class="cl">Hours</span><span class="cv">Mon–Fri 7am–5pm · Sat 8am–1pm</span></div>
           </li>
         </ul>
+      </div>
 
-        <div class="card" style="margin-top:24px">
-          <h3>What happens after you send this</h3>
-          <ol style="margin:0;padding-left:1.15em">
-            <li>Marty calls to confirm the details and book a walkthrough time.</li>
-            <li>We look at the property, measure the scope and check access.</li>
-            <li>You get a fixed price per visit and a proposed schedule in writing.</li>
-            <li>If you go ahead, your first visit date is locked in on the spot.</li>
-          </ol>
-        </div>
+      <div class="card" data-reveal data-reveal-delay="1">
+        <h3>What happens after you send the form</h3>
+        <ol style="margin:0;padding-left:1.15em">
+          <li>Marty calls to confirm the details and book a walkthrough time.</li>
+          <li>We look at the property, measure the scope and check access.</li>
+          <li>You get a fixed price per visit and a proposed schedule in writing.</li>
+          <li>If you go ahead, your first visit date is locked in on the spot.</li>
+        </ol>
       </div>
     </div>
   </div>
 </section>
-""".format(form=form, e164=PHONE_E164, phone=PHONE, email=EMAIL,
-           street=STREET, suburb=SUBURB, state=STATE, postcode=POSTCODE))
+""".format(e164=PHONE_E164, phone=PHONE, email=EMAIL, address=ADDRESS_PUBLIC))
 
     html.append(L.areas_section(
         "We quote across all eleven suburbs on our round. If your property sits just outside "
         "this list, call and ask — we can often fit it in alongside an existing route."))
     html.append(L.faq_section(CONTACT_FAQS, heading="Quote and booking questions"))
     html.append("</main>\n")
-    html.append(L.call_bar())
     html.append(L.footer())
     html.append(L.tail())
     return "".join(html)
@@ -431,7 +338,6 @@ def build_thank_you():
 """.format(service_links=service_links))
 
     html.append("</main>\n")
-    html.append(L.call_bar())
     html.append(L.footer())
     html.append(L.tail())
     return "".join(html)

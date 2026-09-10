@@ -67,15 +67,8 @@
 
   /* ---------------- Sticky header shadow ---------------- */
   var header = document.querySelector('.site-header');
-  var callBar = document.querySelector('.call-bar');
-  if (callBar) document.body.classList.add('has-call-bar');
-
-  var lastY = window.pageYOffset;
   function onScroll() {
-    var y = window.pageYOffset;
-    if (header) header.classList.toggle('is-stuck', y > 8);
-    if (callBar) callBar.classList.toggle('is-visible', y > 320 || y < lastY && y > 120);
-    lastY = y;
+    if (header) header.classList.toggle('is-stuck', window.pageYOffset > 8);
   }
   window.addEventListener('scroll', onScroll, { passive: true });
   onScroll();
@@ -108,8 +101,7 @@
        service_needed   -> {{contact.service_needed}}
        job_notes        -> {{contact.job_notes}}
      Set the endpoint once in assets/js/config.js (window.GF_CONFIG.ghlEndpoint). */
-  var form = document.getElementById('quote-form');
-  if (form) {
+  Array.prototype.forEach.call(document.querySelectorAll('.quote-form'), function (form) {
     var status = form.querySelector('.form-status');
     var submitBtn = form.querySelector('[type="submit"]');
     var cfg = window.GF_CONFIG || {};
@@ -193,17 +185,75 @@
         showStatus('Something went wrong sending your request. Please call 0420 462 848 and we will sort it out.');
       });
     });
+  });
+
+  /* ---------------- Prefill service from ?service= ---------------- */
+  var wanted = new URLSearchParams(window.location.search).get('service');
+  if (wanted) {
+    wanted = wanted.replace(/-/g, ' ');
+    Array.prototype.forEach.call(document.querySelectorAll('[name="service_needed"]'), function (sel) {
+      Array.prototype.forEach.call(sel.options, function (opt) {
+        if (opt.value.toLowerCase() === wanted.toLowerCase()) sel.value = opt.value;
+      });
+    });
   }
 
-  /* ---------------- Prefill service on the quote form ---------------- */
-  var serviceSelect = document.getElementById('service_needed');
-  if (serviceSelect) {
-    var wanted = new URLSearchParams(window.location.search).get('service');
-    if (wanted) {
-      Array.prototype.forEach.call(serviceSelect.options, function (opt) {
-        if (opt.value.toLowerCase() === wanted.toLowerCase()) serviceSelect.value = opt.value;
+  /* ---------------- Quote modal ----------------
+     Opened by any [data-modal-open], closed by [data-modal-close], the backdrop
+     or Escape. Focus is trapped while open and returned to the trigger on close. */
+  var modal = document.getElementById('quote-modal');
+  if (modal) {
+    var lastFocused = null;
+    var FOCUSABLE = 'a[href],button:not([disabled]),input:not([disabled]),select:not([disabled]),textarea:not([disabled]),[tabindex]:not([tabindex="-1"])';
+
+    function openModal() {
+      lastFocused = document.activeElement;
+      modal.hidden = false;
+      document.body.classList.add('modal-open');
+      // Next frame so the transition runs from the hidden state.
+      requestAnimationFrame(function () {
+        modal.classList.add('is-open');
+        var first = modal.querySelector('input:not([tabindex="-1"]),select,textarea');
+        if (first) first.focus();
       });
     }
+
+    function closeModal() {
+      modal.classList.remove('is-open');
+      document.body.classList.remove('modal-open');
+      var done = function () {
+        modal.hidden = true;
+        modal.removeEventListener('transitionend', done);
+      };
+      if (reduceMotion) done();
+      else modal.addEventListener('transitionend', done);
+      if (lastFocused && lastFocused.focus) lastFocused.focus();
+    }
+
+    Array.prototype.forEach.call(document.querySelectorAll('[data-modal-open]'), function (btn) {
+      btn.addEventListener('click', function (e) {
+        e.preventDefault();
+        closeNav();
+        openModal();
+      });
+    });
+
+    modal.addEventListener('click', function (e) {
+      if (e.target.closest('[data-modal-close]')) closeModal();
+    });
+
+    document.addEventListener('keydown', function (e) {
+      if (modal.hidden) return;
+      if (e.key === 'Escape') { closeModal(); return; }
+      if (e.key !== 'Tab') return;
+      var items = Array.prototype.filter.call(modal.querySelectorAll(FOCUSABLE), function (el) {
+        return el.offsetParent !== null;
+      });
+      if (!items.length) return;
+      var first = items[0], last = items[items.length - 1];
+      if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+      else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+    });
   }
 
   /* ---------------- Current year ---------------- */

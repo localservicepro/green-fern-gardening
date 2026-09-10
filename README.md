@@ -55,6 +55,11 @@ The form posts JSON with field names that map 1:1 to the GHL contact fields:
 `property_address`, `property_size`, `service_needed` and `job_notes` are custom fields —
 create them in GHL under **Settings → Custom Fields** with exactly those keys before going live.
 
+The form is rendered twice on most pages: once in the header popup (opened by the
+**Get a free quote** button, present on every page) and once inline — in the hero on
+`/contact/`. Both instances share one handler and one endpoint; element ids are prefixed
+per instance so nothing collides.
+
 **One thing is left to do:** set the endpoint in `assets/js/config.js`:
 
 ```js
@@ -93,6 +98,16 @@ Two related follow-ups:
 
 The header/footer brand mark is an inline SVG fern, so the branding renders with no external
 request. Swap it for the client's supplied logo file if preferred.
+
+## Address masking
+
+Only `Craigieburn VIC 3064` appears in the rendered page. The full street address stays in
+the `LocalBusiness` JSON-LD, so crawlers, Google Business Profile matching and AI answer
+engines still see the complete NAP. `build/gfdata.py` holds both: `ADDRESS_PUBLIC` for the
+visible text and `STREET` for the schema.
+
+If the client later wants the full address shown (it does help local pack consistency),
+swap `ADDRESS_PUBLIC` for the full string in the footer, about and contact templates.
 
 ## Technical SEO in place
 
