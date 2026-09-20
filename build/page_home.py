@@ -2,7 +2,7 @@
 """Homepage — target keyword: Lawn Mowing Craigieburn."""
 
 from gfdata import (SITE_URL, BUSINESS, PHONE, PHONE_E164, SERVICES, SUBURBS,
-                    TESTIMONIALS, FAQS_HOME, img, local_business_node)
+                    TESTIMONIALS, FAQS_HOME, PHOTOS, img, alt, local_business_node)
 import layout as L
 
 ICONS = {
@@ -20,7 +20,7 @@ SERVICE_ICONS = ["mow", "hedge", "garden", "land", "tree"]
 
 # Marquee content. Rendered twice so the loop is seamless; CSS hides the
 # duplicate from assistive tech via the wrapper's aria-hidden.
-TICKER = """<span class="ticker-item">Day-before SMS reminders</span><span class="ticker-item">$10M public liability</span><span class="ticker-item">Working With Children Checks</span><span class="ticker-item">Owner-answered phone</span><span class="ticker-item">Fixed price per visit</span><span class="ticker-item">JSEA & SWMS on commercial sites</span><span class="ticker-item">Same crew every visit</span><span class="ticker-item">Green waste taken away</span>"""
+TICKER = """<span class="ticker-item">A message before we come</span><span class="ticker-item">$10M public liability</span><span class="ticker-item">Working With Children Checks</span><span class="ticker-item">Owner-answered phone</span><span class="ticker-item">Uniformed, experienced crew</span><span class="ticker-item">JSEA & SWMS on commercial sites</span><span class="ticker-item">Edges crisp, clippings cleared</span><span class="ticker-item">A quote before we start</span>"""
 
 
 def build():
@@ -33,8 +33,8 @@ def build():
                         "across Melbourne’s north. Homes, schools, childcare and strata. "
                         "Call 0420 462 848."),
         "og_title": "Lawn Mowing Craigieburn | Green Fern Gardening Services",
-        "og_photo": "photo1",
-        "og_alt": "Green Fern Gardening Services mowing a lawn in Craigieburn",
+        "og_photo": "turf-renovation",
+        "og_alt": alt("turf-renovation"),
         "schema": [{
             "@context": "https://schema.org",
             "@graph": [
@@ -54,7 +54,7 @@ def build():
                     "name": "Lawn Mowing Craigieburn | Green Fern Gardening Services",
                     "isPartOf": {"@id": SITE_URL + "/#website"},
                     "about": {"@id": SITE_URL + "/#business"},
-                    "primaryImageOfPage": img("photo1", 1200),
+                    "primaryImageOfPage": img("turf-renovation", 1200),
                     "inLanguage": "en-AU",
                 },
                 L.faq_schema(FAQS_HOME),
@@ -74,15 +74,15 @@ def build():
           </div>
         </article>""".format(
         d=(i % 3) + 1, photo=img(s["photo"], 600), slug=s["slug"], nav=s["nav"], card=s["card"],
-        alt="%s by %s across Melbourne’s northern suburbs" % (s["nav"], BUSINESS),
+        alt=alt(s["photo"]),
     ) for i, s in enumerate(SERVICES))
 
     quotes = "\n".join("""        <figure class="quote-card" data-reveal data-reveal-delay="{d}">
           <div class="quote-stars" aria-label="5 out of 5 stars">★★★★★</div>
           <blockquote><p>{quote}</p></blockquote>
           <figcaption><cite><b>{name}</b>{role}</cite></figcaption>
-        </figure>""".format(d=(i % 3) + 1, quote=t["quote"], name=t["name"], role=t["role"])
-        for i, t in enumerate(TESTIMONIALS[:3]))
+        </figure>""".format(d=(i % 2) + 1, quote=t["quote"], name=t["name"], role=t["role"])
+        for i, t in enumerate(TESTIMONIALS))
 
     html = []
     html.append(L.head(page))
@@ -94,9 +94,9 @@ def build():
   <div class="wrap hero-inner">
     <div class="hero-copy">
       <span class="eyebrow">Craigieburn · Melbourne’s northern suburbs</span>
-      <h1>Lawn Mowing &amp; Garden Maintenance Craigieburn</h1>
+      <h1>Lawn Mowing &amp; Garden Maintenance in Melbourne’s North</h1>
       <p class="hero-sub">Grounds care that shows up. Every time.</p>
-      <p class="lede">Green Fern Gardening Services is the lawn mowing Craigieburn households, childcare centres, schools and strata book when they want it handled rather than chased. Scheduled visits across Craigieburn, Epping, Lalor and Melbourne’s north — a set visit day, a day-before SMS, and the same crew every time.</p>
+      <p class="lede">Scheduled mowing and garden care for homes, childcare centres, schools and strata across Craigieburn, Glenroy, Thomastown, Preston and the rest of Melbourne’s north. Your cycle is agreed up front and you get a message before we come — no chasing, no re-booking.</p>
       <div class="btn-row btn-row--split">
         <a class="btn btn--call" href="tel:{e164}">Call {phone}</a>
         <button class="btn btn--primary" type="button" data-modal-open="quote-modal">Get a free quote</button>
@@ -104,7 +104,7 @@ def build():
     </div>
     <div class="hero-media">
       <img src="{hero}" width="900" height="675" fetchpriority="high" decoding="async"
-           alt="Green Fern Gardening Services mowing a residential lawn in Craigieburn, Melbourne">
+           alt="{hero_alt}">
     </div>
   </div>
   <div class="ticker" aria-label="What every Green Fern client gets">
@@ -114,8 +114,8 @@ def build():
     </div>
   </div>
 </section>
-""".format(e164=PHONE_E164, phone=PHONE, hero=img("photo1", 900),
-           ticker=TICKER))
+""".format(e164=PHONE_E164, phone=PHONE, hero=img("turf-renovation", 900),
+           hero_alt=alt("turf-renovation"), ticker=TICKER))
 
     # ---- Trust strip ----
     html.append("""<section class="trust-strip">
@@ -138,25 +138,25 @@ def build():
         <span class="eyebrow">Our home ground</span>
         <h2>Lawn Mowing Craigieburn — on a schedule, not on request</h2>
         <p>Green Fern is based at Craigieburn, which means lawn mowing Craigieburn properties sits on our own doorstep rather than at the end of a cross-town run. Craigieburn, Epping, Lalor and Thomastown share a single round, so those properties get the earliest start dates and the lowest per-visit price on our books.</p>
-        <p>Craigieburn lawns are hard on a mower. The soil compacts, summers run hot and dry, and spring growth from September through November is steep enough that a fortnightly cycle turns into twice the work at every visit. So we set the cycle to the season rather than selling one flat schedule: weekly through spring, fortnightly over summer, monthly through the winter slowdown.</p>
+        <p>Craigieburn lawns are hard on a mower. The soil compacts and summers run hot and dry, so the cycle changes with the season rather than staying flat all year: fortnightly from September through April while the grass is growing, then four-weekly from May to August when it slows down.</p>
         <ul>
           <li>Mow, edge, line-trim and clippings removed — every visit, no extras billed after</li>
-          <li>A fixed price per visit, quoted from a walkthrough rather than an hourly rate</li>
-          <li>An automated SMS the day before so gates get unlocked and pets brought in</li>
-          <li>The same crew each cycle, who already know the site and its access</li>
+          <li>A straightforward quote after a walkthrough, so you know the cost before we start</li>
+          <li>A message before we come, so gates get unlocked and pets brought in</li>
+          <li>An experienced, uniformed crew, comfortable working around children, staff and residents</li>
         </ul>
         <a class="btn btn--primary" href="/services/lawn-mowing/">Lawn mowing details and pricing</a>
       </div>
       <div data-reveal data-reveal-delay="1">
         <div class="split-media">
           <img src="{photo}" width="720" height="540" loading="lazy" decoding="async"
-               alt="Green Fern Gardening Services completing a scheduled lawn mowing visit in Craigieburn">
+               alt="{kw_alt}">
         </div>
       </div>
     </div>
   </div>
 </section>
-""".format(photo=img("photo2", 720)))
+""".format(photo=img("laid-turf", 720), kw_alt=alt("laid-turf")))
 
     # ---- Services ----
     html.append("""<section class="section" id="services">
@@ -180,8 +180,8 @@ def build():
     <div class="grid grid--3" style="margin-top:34px">
       <article class="card" data-reveal data-reveal-delay="1">
         <div class="card-icon">{sms}</div>
-        <h3>An automated SMS the day before</h3>
-        <p>You know exactly when we are coming. Gates get unlocked, pets get brought in, and outdoor sessions get moved without anyone having to ring us.</p>
+        <h3>You always know when we’re coming</h3>
+        <p>A message lands before your visit. Gates get unlocked, pets get brought in, and outdoor sessions get moved without anyone having to ring us.</p>
       </article>
       <article class="card" data-reveal data-reveal-delay="2">
         <div class="card-icon">{shield}</div>
@@ -191,7 +191,7 @@ def build():
       <article class="card" data-reveal data-reveal-delay="3">
         <div class="card-icon">{clock}</div>
         <h3>A schedule you never have to chase</h3>
-        <p>Weekly, fortnightly or monthly, set at the first walkthrough. Same crew, same day, no re-booking and no call centre — you speak to {owner}.</p>
+        <p>Mowing runs fortnightly September to April and four-weekly May to August, agreed at the first walkthrough. No re-booking, no call centre — you speak to {owner}.</p>
       </article>
     </div>
   </div>
@@ -206,15 +206,15 @@ def build():
     <ol class="steps" style="margin-top:34px">
       <li data-reveal data-reveal-delay="1">
         <h3>Free walkthrough</h3>
-        <p>Call {phone} or send the quote form. We walk the property, measure what actually needs doing, and give you a fixed price per visit — not an hourly guess.</p>
+        <p>Call {phone} or send the quote form. Marty walks the property, scopes what actually needs doing, and sends through a straightforward quote.</p>
       </li>
       <li data-reveal data-reveal-delay="2">
         <h3>Your schedule gets set</h3>
-        <p>Weekly through spring, fortnightly over summer, monthly through winter — or whatever cycle suits the site. Locked in up front, with your visit day confirmed.</p>
+        <p>Mowing runs fortnightly from September to April and four-weekly from May to August. Other grounds work is set to whatever cycle the site needs, agreed up front.</p>
       </li>
       <li data-reveal data-reveal-delay="3">
         <h3>We just turn up</h3>
-        <p>An SMS lands the day before. The crew mows, edges, trims and clears clippings, then sends through anything you should know about. That is the whole job.</p>
+        <p>A message lands before the visit. The crew mows, edges, trims and clears the clippings, then flags anything you should know about. That is the whole job.</p>
       </li>
     </ol>
   </div>
@@ -227,7 +227,7 @@ def build():
     <div class="split">
       <div class="split-media" data-reveal>
         <img src="{photo}" width="720" height="540" loading="lazy" decoding="async"
-             alt="Green Fern Gardening Services maintaining grounds at a childcare centre in Melbourne’s north">
+             alt="{photo_alt}">
       </div>
       <div data-reveal data-reveal-delay="1">
         <span class="eyebrow">Who we work for</span>
@@ -246,14 +246,14 @@ def build():
     </div>
   </div>
 </section>
-""".format(photo=img("photo3", 720)))
+""".format(photo=img("childcare-beds", 720), photo_alt=alt("childcare-beds")))
 
     # ---- Testimonials ----
     html.append("""<section class="section" id="reviews">
   <div class="wrap">
     <span class="eyebrow" data-reveal>What clients say</span>
-    <h2 data-reveal>Centre directors, principals and homeowners</h2>
-    <div class="grid grid--3" style="margin-top:34px">
+    <h2 data-reveal>Centre directors, service managers and school principals</h2>
+    <div class="grid grid--2" style="margin-top:34px">
 {quotes}
     </div>
   </div>
@@ -261,29 +261,28 @@ def build():
 """.format(quotes=quotes))
 
     # ---- Gallery ----
+    gallery = "\n".join(
+        '      <figure data-reveal data-reveal-delay="%d"><img src="%s" width="520" height="390"'
+        ' loading="lazy" decoding="async" alt="%s"></figure>' % ((i % 3) + 1, img(k, 520), alt(k))
+        for i, k in enumerate(PHOTOS))
     html.append("""<section class="section section--tint" id="our-work">
   <div class="wrap">
     <span class="eyebrow" data-reveal>Our recent work</span>
     <h2 data-reveal>Lawns, hedges and grounds across Melbourne’s north</h2>
-    <p class="lede" data-reveal>A sample of scheduled maintenance and one-off works completed for homes, centres and commercial sites around Craigieburn.</p>
+    <p class="lede" data-reveal>A sample of scheduled maintenance and one-off works completed for homes, centres and commercial sites around Craigieburn, Glenroy, Thomastown and Preston.</p>
     <div class="gallery" style="margin-top:30px">
-      <figure data-reveal data-reveal-delay="1"><img src="{p1}" width="520" height="390" loading="lazy" decoding="async" alt="Freshly mown residential lawn maintained by Green Fern Gardening Services in Craigieburn"></figure>
-      <figure data-reveal data-reveal-delay="2"><img src="{p2}" width="520" height="390" loading="lazy" decoding="async" alt="Hedge trimming and garden bed work completed in Melbourne’s northern suburbs"></figure>
-      <figure data-reveal data-reveal-delay="3"><img src="{p3}" width="520" height="390" loading="lazy" decoding="async" alt="Scheduled grounds maintenance on a commercial property in Melbourne’s north"></figure>
-      <figure data-reveal data-reveal-delay="1"><img src="{p4}" width="520" height="390" loading="lazy" decoding="async" alt="Soft landscaping and garden bed renovation completed in Craigieburn"></figure>
-      <figure data-reveal data-reveal-delay="2"><img src="{p5}" width="520" height="390" loading="lazy" decoding="async" alt="Tree and shrub removal and site clean-up by Green Fern Gardening Services"></figure>
-      <figure data-reveal data-reveal-delay="3"><img src="{p6}" width="520" height="390" loading="lazy" decoding="async" alt="Green Fern Gardening Services crew maintaining garden beds in Melbourne’s north"></figure>
+{gallery}
     </div>
   </div>
 </section>
-""".format(p1=img("photo1", 520), p2=img("photo2", 520), p3=img("photo3", 520),
-           p4=img("photo4", 520), p5=img("photo5", 520), p6=img("photo6", 520)))
+""".format(gallery=gallery))
 
     # ---- Service areas ----
     html.append(L.areas_section(
         "Green Fern Gardening Services is based at Craigieburn and runs scheduled rounds through "
-        "Melbourne’s northern corridor. If your property is in one of these suburbs, we can usually "
-        "add you to an existing round — which keeps the per-visit price down."))
+        "Melbourne’s northern corridor — Craigieburn, Glenroy, Thomastown and Preston, and the "
+        "suburbs that sit between them. If your property is on an existing round, that usually "
+        "means an earlier start date and a better per-visit price."))
 
     # ---- FAQ ----
     html.append(L.faq_section(
@@ -294,8 +293,8 @@ def build():
     # ---- CTA ----
     html.append(L.cta_band(
         "Ready for grounds care you don’t have to chase?",
-        "Free on-site walkthrough, a fixed price per visit, and a schedule locked in before we start. "
-        "Craigieburn, Epping, Lalor, Reservoir, Preston and across Melbourne’s north."))
+        "Free on-site walkthrough, a straightforward quote, and a cycle agreed before we start. "
+        "Craigieburn, Glenroy, Thomastown, Preston and across Melbourne’s north."))
 
     html.append("</main>\n")
     html.append(L.footer())

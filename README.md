@@ -76,6 +76,28 @@ The GHL external tracking script (`tk_eae768369958426d9896d163c30864d9`) is alre
 site-wide from `build/layout.py`, so attribution is captured on every page including the
 thank-you redirect.
 
+## Content integrity
+
+Two rules this repo enforces, both from client corrections:
+
+- **Testimonials in `build/gfdata.py` are verbatim from greenfern.au**, with real names and
+  roles. Never add, reword or invent a review — if a new one is needed, get the text from
+  the client.
+- **Photo alt text lives in the `PHOTOS` registry**, taken from the client's own site, and
+  `img()`/`alt()` are always used together. Never write alt text inline at a call site —
+  that's how photos end up next to content they don't show.
+
+Service facts that were corrected and must not drift back:
+
+| Claim | Correct version |
+| --- | --- |
+| Mowing frequency | Fortnightly Sept–April, four-weekly May–Aug. **No weekly mowing.** |
+| Crew | Experienced and uniformed, but **not guaranteed the same crew** each visit |
+| Timing | A cycle is agreed and a message goes out before the visit — **no guaranteed fixed day** |
+| Tree removal | **Up to 8 metres.** Taller, near power lines, or needing climbing/crane = arborist |
+| Slashing | **Waste is not removed** on slashing jobs; it is on removals and clean-ups |
+| One-off work | Quoted **separately** from the ongoing maintenance price |
+
 ## Images — action needed before launch
 
 Site egress in the build environment blocks Google Drive, so the client's photography could
@@ -89,9 +111,8 @@ visitors, but they should be moved in-repo before launch for speed and reliabili
 
 Two related follow-ups:
 
-- **Alt text needs a check.** The photos could not be viewed from the build environment, so
-  alt text describes the service context rather than the specific photo. Confirm each one
-  matches what is actually in the image.
+- **Alt text is now sourced from the client's own site**, recovered by parsing greenfern.au,
+  so each photo sits with content that matches it. The mapping lives in `PHOTOS`.
 - **`apple-touch-icon.png` is not present.** `/favicon.svg` covers everything except iOS
   home-screen icons; export a 180×180 PNG of the logo to `/apple-touch-icon.png` and add
   `<link rel="apple-touch-icon" href="/apple-touch-icon.png">` in `build/layout.py`.

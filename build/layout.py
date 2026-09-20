@@ -3,7 +3,7 @@
 
 from forms import quote_modal
 from gfdata import (SITE_URL, BUSINESS, PHONE, PHONE_E164, EMAIL, ABN, ADDRESS_PUBLIC,
-                    SUBURBS, SERVICES, GHL_TRACKING_ID, GHL_TRACKING_SRC,
+                    SUBURBS, MAIN_SUBURBS, SERVICES, GHL_TRACKING_ID, GHL_TRACKING_SRC,
                     img, jsonld)
 
 # Critical CSS: everything needed to paint the header and hero without waiting
@@ -72,27 +72,12 @@ p{margin:0 0 1.1em}
 """
 
 
-BRAND_MARK = """<svg class="brand-mark" viewBox="0 0 56 64" width="41" height="47" aria-hidden="true" focusable="false">
-  <path d="M15 59C20 41 27 27 39 15" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
-  <path d="M39 15c1.7-3.6 4.6-5.5 7.1-4.5 2.7 1 3.3 4.5 1 6.4-1.9 1.6-4.5.7-4.8-1.7" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
-  <g fill="currentColor">
-    <path d="M15.77 56.33C21.69 59.95 28.89 56.89 32.83 53.29C27.63 51.79 19.56 51.92 15.77 56.33Z"/>
-    <path d="M17.29 51.48C16.97 45.02 10.83 41.21 5.99 40.17C7.56 44.93 11.89 50.99 17.29 51.48Z"/>
-    <path d="M18.94 46.83C23.73 50.44 29.98 48.23 33.51 45.32C29.21 43.63 22.39 43.19 18.94 46.83Z"/>
-    <path d="M20.74 42.36C21.07 36.84 16.18 33.32 12.13 32.21C13.03 36.34 16.17 41.7 20.74 42.36Z"/>
-    <path d="M22.69 38.06C26.32 41.58 31.57 40.16 34.65 37.91C31.27 36.1 25.76 35.17 22.69 38.06Z"/>
-    <path d="M24.81 33.94C25.72 29.44 22.03 26.31 18.77 25.21C19.05 28.64 21.07 33.18 24.81 33.94Z"/>
-    <path d="M27.13 29.97C29.62 33.25 33.79 32.47 36.36 30.81C33.92 28.99 29.75 27.76 27.13 29.97Z"/>
-    <path d="M29.64 26.14C30.96 22.72 28.36 20.16 25.86 19.18C25.64 21.82 26.7 25.4 29.64 26.14Z"/>
-    <path d="M32.38 22.46C33.8 25.33 36.83 24.97 38.83 23.78C37.29 22.12 34.46 20.82 32.38 22.46Z"/>
-  </g>
-</svg>"""
 
 
 def head(page):
     """Build the <head> for a page dict."""
     canonical = SITE_URL + page["path"]
-    og_image = img(page.get("og_photo", "photo1"), 1200)
+    og_image = img(page.get("og_photo", "laid-turf"), 1200)
     robots = ('<meta name="robots" content="noindex, follow">'
               if page.get("noindex") else
               '<meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">')
@@ -175,7 +160,8 @@ def header(current=""):
     return """<header class="site-header">
   <div class="wrap header-inner">
     <a class="brand" href="/" aria-label="{business} home">
-      {mark}
+      <img class="brand-mark" src="{logo}" width="176" height="176"
+           alt="{business} logo" fetchpriority="high" decoding="async">
       <span class="brand-text">
         <span class="brand-name">Green Fern</span>
         <span class="brand-tag">Garden Services</span>
@@ -215,7 +201,7 @@ def header(current=""):
 </header>
 """.format(
         business=BUSINESS,
-        mark=BRAND_MARK,
+        logo=img("logo", 352),
         home=_nav_link("Home", "/", current),
         services_current=services_current,
         dd_items=dd_items,
@@ -237,7 +223,8 @@ def footer():
     <div class="footer-grid">
       <div class="footer-brand">
         <a class="brand" href="/" aria-label="{business} home">
-          {mark}
+          <img class="brand-mark" src="{logo_sm}" width="120" height="120"
+               alt="" loading="lazy" decoding="async">
           <span class="brand-text">
             <span class="brand-name">Green Fern</span>
             <span class="brand-tag">Garden Services</span>
@@ -286,7 +273,7 @@ def footer():
   </div>
 </footer>
 """.format(
-        business=BUSINESS, owner="Marty Searle", mark=BRAND_MARK,
+        business=BUSINESS, owner="Marty Searle", logo_sm=img("logo", 240),
         service_links=service_links, e164=PHONE_E164, phone=PHONE, email=EMAIL,
         address=ADDRESS_PUBLIC, areas=areas, abn=ABN,
     )
@@ -396,14 +383,18 @@ def cta_band(heading, body, service=None):
 
 
 def areas_section(intro, deep=True):
-    lis = "\n".join('      <li><span>%s</span></li>' % s for s in SUBURBS)
+    # The four headline suburbs lead; the rest follow as the corridor between them.
+    lis = "\n".join('      <li><span class="area-main">%s</span></li>' % s for s in MAIN_SUBURBS)
+    rest = [s for s in SUBURBS if s not in MAIN_SUBURBS]
+    lis += "\n" + "\n".join('      <li><span>%s</span></li>' % s for s in rest)
     cls = "section section--deep" if deep else "section section--tint"
     return """<section class="{cls}" id="service-areas">
   <div class="wrap">
     <span class="eyebrow" data-reveal>Service areas</span>
     <h2 data-reveal>Gardening services across Melbourne’s northern suburbs</h2>
     <p class="lede" data-reveal>{intro}</p>
-    <ul class="area-list" style="margin-top:26px" data-reveal>
+    <p class="area-note" data-reveal>Our four main suburbs, plus everything in between.</p>
+    <ul class="area-list" style="margin-top:18px" data-reveal>
 {lis}
     </ul>
   </div>

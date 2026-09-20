@@ -620,3 +620,9 @@ body.modal-open{overflow:hidden}
 @media (max-width:359px){
   .brand-text{display:none}
 }
+
+/* Four headline suburbs lead the service-areas list. */
+.area-note{font-size:.84rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-3);margin:18px 0 0}
+.section--deep .area-note{color:var(--fern-300)}
+.area-list .area-main{background:var(--fern-600);border-color:var(--fern-600);color:#fff}
+.section--deep .area-list .area-main{background:var(--fern-500);border-color:var(--fern-400);color:#fff}

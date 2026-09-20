@@ -2,7 +2,7 @@
 """Services hub and the five service pages."""
 
 from gfdata import (SITE_URL, BUSINESS, PHONE, PHONE_E164, SERVICES, SUBURBS,
-                    TESTIMONIALS, img, local_business_node)
+                    TESTIMONIALS, img, alt, local_business_node)
 import layout as L
 
 
@@ -30,7 +30,7 @@ def build_hub():
         "title": "Gardening Services Melbourne | Green Fern Craigieburn",
         "description": ("Gardening services across Melbourne’s north — lawn mowing, hedge trimming, "
                         "garden maintenance, landscaping and tree removal. Call 0420 462 848."),
-        "og_photo": "photo3",
+        "og_photo": "turf-renovation",
         "og_alt": "Green Fern Gardening Services grounds maintenance in Melbourne’s north",
         "schema": [{
             "@context": "https://schema.org",
@@ -72,7 +72,7 @@ def build_hub():
         </article>""".format(
         d=(i % 3) + 1, photo=img(s["photo"], 600), slug=s["slug"], nav=s["nav"],
         nav_l=s["nav"].lower(), card=s["card"], audience=s["audience"],
-        alt="%s in Melbourne’s northern suburbs by %s" % (s["nav"], BUSINESS),
+        alt=alt(s["photo"]),
     ) for i, s in enumerate(SERVICES))
 
     html = [L.head(page), L.header("/services/")]
@@ -81,11 +81,12 @@ def build_hub():
         "Craigieburn · Melbourne’s north",
         "Gardening Services Melbourne — Lawn, Hedge &amp; Grounds Care",
         "Green Fern Gardening Services covers the full round: lawn mowing, hedge trimming, weed control, "
-        "garden maintenance, soft landscaping and tree removal. One contractor, one schedule, one invoice — "
-        "across Craigieburn, Epping, Reservoir, Preston and the rest of Melbourne’s northern suburbs.",
+        "garden maintenance, soft landscaping, tree removal and one-off project work. One contractor, "
+        "one schedule, one invoice — across Craigieburn, Glenroy, Thomastown, Preston and the rest of "
+        "Melbourne’s northern suburbs.",
         '<button class="btn btn--call" type="button" data-modal-open="quote-modal">Get a free quote</button>'
         '<a class="btn btn--ghost" href="tel:%s">Call %s</a>' % (PHONE_E164, PHONE),
-        bg_photo="photo6"))
+        bg_photo="strata-driveway"))
 
     html.append('<main id="main">\n')
     html.append("""<section class="section">
@@ -105,7 +106,7 @@ def build_hub():
     <div class="split split--flip">
       <div class="split-media" data-reveal>
         <img src="{photo}" width="720" height="540" loading="lazy" decoding="async"
-             alt="Green Fern Gardening Services crew working on a scheduled maintenance round in Melbourne’s north">
+             alt="{photo_alt}">
       </div>
       <div data-reveal data-reveal-delay="1">
         <span class="eyebrow">Bundled rounds</span>
@@ -114,7 +115,7 @@ def build_hub():
           <p>A crew already on site for a mow can trim the hedge, clear the beds and top up mulch in the same visit. That is cheaper than three separate call-outs, and it is the reason our childcare, school and strata clients hand us the whole grounds contract rather than splitting it.</p>
           <ul>
             <li>One visit, one travel charge, one invoice</li>
-            <li>The same crew who know where the taps, gates and access codes are</li>
+            <li>A crew who already know where the taps, gates and access codes are</li>
             <li>Problems get flagged early — drainage, dieback, damaged softfall</li>
             <li>A single point of contact: {owner}, who answers his own phone</li>
           </ul>
@@ -124,12 +125,11 @@ def build_hub():
     </div>
   </div>
 </section>
-""".format(photo=img("photo6", 720), owner="Marty Searle"))
+""".format(photo=img("turf-renovation", 720), photo_alt=alt("turf-renovation"), owner="Marty Searle"))
 
     html.append(L.areas_section(
-        "Every service on this page is available across all eleven suburbs we cover. "
-        "Craigieburn, Epping, Lalor and Thomastown sit on the same round, so those "
-        "properties usually get the earliest available start date."))
+        "Every service on this page is available right across our service area, anchored on "
+        "Craigieburn, Glenroy, Thomastown and Preston."))
 
     html.append(L.faq_section(HUB_FAQS, heading="Questions about our gardening services"))
     html.append(L.cta_band(
@@ -144,11 +144,11 @@ def build_hub():
 
 HUB_FAQS = [
     ("What gardening services does Green Fern offer in Melbourne?",
-     "Green Fern Gardening Services offers lawn mowing, hedge trimming, garden maintenance with weed control, soft landscaping and tree removal across Craigieburn, Epping, Lalor, Thomastown, Reservoir, Preston, Northcote, Glenroy, Broadmeadows, Campbellfield and Tullamarine."),
+     "Green Fern Gardening Services offers lawn mowing, hedge trimming, garden maintenance with weed control, soft landscaping, tree removal and one-off project work across Craigieburn, Glenroy, Thomastown, Preston and the surrounding northern suburbs of Melbourne."),
     ("Can I book more than one service on the same visit?",
      "Yes, and it costs less than booking them separately. A crew already on site for a mow can trim hedges, weed beds and top up mulch in the same visit, so you pay one travel charge and receive one invoice."),
     ("Do you offer one-off jobs or only regular schedules?",
-     "Both. Tree removal, block slashing, garden renovations and seasonal clean-ups are commonly one-off. Lawn mowing, hedge trimming and garden maintenance are usually scheduled weekly, fortnightly or monthly, which lowers the per-visit price."),
+     "Both. Tree removal, block slashing, hedge reductions, garden renovations and seasonal clean-ups are one-off and quoted separately. Lawn mowing runs fortnightly September to April and four-weekly May to August; hedge trimming and garden maintenance run on a cycle set to the site."),
     ("Do you service commercial and strata properties?",
      "Yes. Childcare centres, schools, strata common areas and commercial frontages are Green Fern’s core work, covered by $10M public liability, Working With Children Checks and a JSEA and SWMS on every site."),
 ]

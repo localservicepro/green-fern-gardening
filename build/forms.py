@@ -114,6 +114,6 @@ def quote_modal():
 """.format(form=quote_form(
         "qf-modal",
         heading='<span id="quote-modal-title">Get a free quote</span>',
-        intro="Free on-site walkthrough, a fixed price per visit, and a schedule locked in before we start.",
+        intro="Free on-site walkthrough, a straightforward quote, and a cycle agreed before we start.",
         classes="modal-form",
     ))

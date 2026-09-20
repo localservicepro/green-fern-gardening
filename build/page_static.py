@@ -4,7 +4,7 @@
 from forms import quote_form
 from gfdata import (SITE_URL, BUSINESS, OWNER, PHONE, PHONE_E164, EMAIL, ABN,
                     ADDRESS_PUBLIC, SUBURBS, SERVICES, TESTIMONIALS,
-                    img, local_business_node)
+                    img, alt, local_business_node)
 import layout as L
 
 ABOUT_FAQS = [
@@ -15,16 +15,16 @@ ABOUT_FAQS = [
     ("How long has Green Fern been operating in Melbourne’s north?",
      "Green Fern Gardening Services operates from Craigieburn under ABN 29 279 087 766, servicing eleven suburbs across Melbourne’s northern corridor for homes, childcare centres, schools, strata properties and commercial grounds."),
     ("What makes Green Fern different from other Melbourne gardeners?",
-     "Scheduled visits with an automated SMS the day before, the same crew each time, compliance documentation supplied before you ask, and a fixed price per visit rather than an hourly rate that varies with how long the job takes."),
+     "A cycle agreed up front with a message before each visit, an experienced uniformed crew, compliance documentation supplied before you ask, and a straightforward quote rather than an open-ended hourly rate."),
 ]
 
 CONTACT_FAQS = [
     ("How do I get a quote from Green Fern?",
-     "Call 0420 462 848 or send the quote form on this page. We book a free on-site walkthrough, measure what actually needs doing, and give you a fixed price per visit — usually within one business day of the walkthrough."),
+     "Call 0420 462 848 or send the quote form on this page. Marty books a free on-site walkthrough, scopes what actually needs doing, and sends through a straightforward quote — usually within one business day of the walkthrough."),
     ("What areas do you quote in?",
-     "Craigieburn, Lalor, Epping, Glenroy, Campbellfield, Broadmeadows, Thomastown, Reservoir, Tullamarine, Preston and Northcote. If you are just outside that list, call and ask — we can often fit a property in near an existing round."),
+     "Craigieburn, Glenroy, Thomastown and Preston are our main suburbs, and we cover everything in between — Lalor, Epping, Campbellfield, Broadmeadows, Reservoir, Tullamarine and Northcote. If you are just outside that list, call and ask."),
     ("How quickly can you start?",
-     "Properties in Craigieburn, Epping, Lalor and Thomastown sit on an existing round and usually get the earliest start date. For other suburbs it depends on the current schedule — we will tell you a real date at the walkthrough, not a maybe."),
+     "Properties in Craigieburn, Glenroy, Thomastown and Preston sit on established rounds and usually get the earliest start date. For other suburbs it depends on the current schedule — we will tell you a real date at the walkthrough, not a maybe."),
     ("Do you charge for quotes?",
      "No. The on-site walkthrough and the written quote are free, with no obligation to book."),
 ]
@@ -38,7 +38,7 @@ def build_about():
         "description": ("Owner-operated grounds maintenance from Craigieburn. Green Fern services "
                         "homes, childcare centres, schools and strata across Melbourne’s north. "
                         "Call 0420 462 848."),
-        "og_photo": "photo6",
+        "og_photo": "strata-driveway",
         "og_alt": "The Green Fern Gardening Services crew working in Melbourne’s northern suburbs",
         "schema": [{
             "@context": "https://schema.org",
@@ -73,7 +73,7 @@ def build_about():
         "commercial grounds across eleven suburbs." % OWNER,
         '<button class="btn btn--call" type="button" data-modal-open="quote-modal">Get a free quote</button>'
         '<a class="btn btn--ghost" href="tel:%s">Call %s</a>' % (PHONE_E164, PHONE),
-        bg_photo="photo6"))
+        bg_photo="strata-driveway"))
 
     html.append('<main id="main">\n')
     html.append("""<section class="section">
@@ -81,19 +81,19 @@ def build_about():
     <div class="split">
       <div class="split-media" data-reveal>
         <img src="{photo}" width="720" height="540" loading="lazy" decoding="async"
-             alt="{owner}, owner of Green Fern Gardening Services, working on a property in Craigieburn">
+             alt="{photo_alt}">
       </div>
       <div class="prose" data-reveal data-reveal-delay="1">
         <span class="eyebrow">The business</span>
         <h2>One contractor who actually turns up</h2>
         <p>Green Fern Gardening Services started because grounds maintenance in Melbourne’s north had a reliability problem, not a quality problem. Plenty of gardeners can cut a lawn well. Far fewer show up on the day they said they would, three months in a row.</p>
-        <p>So the whole business is built around the schedule. Your visit day is set at the first walkthrough. An automated SMS lands the day before. The same crew arrives, does the same scope, and you get told about anything that needs attention. There is no dispatcher, no call centre and no rotating roster of subcontractors — you deal with {owner}.</p>
+        <p>So the whole business is built around the schedule. Your cycle is agreed at the first walkthrough, a message lands before the visit, and the crew works the same scope each time. There is no dispatcher and no call centre — enquiries go straight to {owner}.</p>
         <p>That approach is why most of our work now sits on sites where a missed visit is a real problem: childcare centres, schools, strata common areas and commercial frontages. Those clients cannot run on maybe.</p>
       </div>
     </div>
   </div>
 </section>
-""".format(photo=img("photo6", 720), owner=OWNER))
+""".format(photo=img("strata-driveway", 720), photo_alt=alt("strata-driveway"), owner=OWNER))
 
     html.append("""<section class="section section--tint">
   <div class="wrap">
@@ -111,11 +111,11 @@ def build_about():
       </article>
       <article class="card" data-reveal data-reveal-delay="3">
         <h3>Scheduled around your site, not ours</h3>
-        <p>Visits are planned around session times, timetables, access windows and gate codes. On childcare and school grounds that means working when children are not in the area, every time.</p>
+        <p>Visits are planned around session times, timetables, access windows and gate codes. On childcare and school grounds that means working when children are not in the area.</p>
       </article>
       <article class="card" data-reveal data-reveal-delay="4">
-        <h3>Fixed price per visit</h3>
-        <p>Quoted per visit after a walkthrough, not billed hourly. The price does not change because the job took longer than expected, and there are no green-waste surcharges on scheduled work.</p>
+        <h3>Quoted, not open-ended</h3>
+        <p>Ongoing work is quoted per visit after a walkthrough rather than billed by the hour. One-off and project work — removals, reductions, renovations — is quoted separately from the regular service.</p>
       </article>
     </div>
   </div>
@@ -152,7 +152,7 @@ def build_about():
     html.append("""<section class="section section--tint" id="reviews">
   <div class="wrap">
     <span class="eyebrow" data-reveal>What clients say</span>
-    <h2 data-reveal>Centre directors, principals, strata managers and homeowners</h2>
+    <h2 data-reveal>Centre directors, service managers and school principals</h2>
     <div class="grid grid--2" style="margin-top:34px">
 {quotes}
     </div>
@@ -182,7 +182,7 @@ def build_contact():
         "title": "Contact Green Fern Gardening Services | Craigieburn",
         "description": ("Get a free lawn mowing or garden maintenance quote in Craigieburn, Epping "
                         "and across Melbourne’s north. Call 0420 462 848 or send the quote form."),
-        "og_photo": "photo2",
+        "og_photo": "formal-hedge",
         "og_alt": "Contact Green Fern Gardening Services in Craigieburn",
         "schema": [{
             "@context": "https://schema.org",
@@ -210,7 +210,7 @@ def build_contact():
         "Preston and the rest of Melbourne’s north. Fill in the form and we will come and look at "
         "the property, or call Marty directly.",
         '<a class="btn btn--call" href="tel:%s">Call %s</a>' % (PHONE_E164, PHONE),
-        bg_photo="photo2",
+        bg_photo="formal-hedge",
         extra='<div class="page-head-form">%s</div>' % quote_form(
             "qf-hero", heading="Request your free quote",
             intro="Most quotes go out within one business day.")))
@@ -247,8 +247,8 @@ def build_contact():
         <ol style="margin:0;padding-left:1.15em">
           <li>Marty calls to confirm the details and book a walkthrough time.</li>
           <li>We look at the property, measure the scope and check access.</li>
-          <li>You get a fixed price per visit and a proposed schedule in writing.</li>
-          <li>If you go ahead, your first visit date is locked in on the spot.</li>
+          <li>You get a quote and a proposed cycle in writing.</li>
+          <li>If you go ahead, we book your first visit in.</li>
         </ol>
       </div>
     </div>
@@ -274,7 +274,7 @@ def build_thank_you():
         "title": "Thank you — your quote request is in | Green Fern Gardening Services",
         "description": "Your quote request has been received. Marty will call you shortly to book a free on-site walkthrough.",
         "noindex": True,
-        "og_photo": "photo1",
+        "og_photo": "laid-turf",
         "og_alt": "Green Fern Gardening Services",
         "schema": [{
             "@context": "https://schema.org",
@@ -318,7 +318,7 @@ def build_thank_you():
       </li>
       <li data-reveal data-reveal-delay="3">
         <h3>Fixed quote in writing</h3>
-        <p>A price per visit and a proposed schedule. Go ahead and your first visit date is locked in on the spot.</p>
+        <p>A price per visit and a proposed cycle. Go ahead and we book your first visit in.</p>
       </li>
     </ol>
   </div>
@@ -351,7 +351,7 @@ def build_404():
         "title": "Page not found | Green Fern Gardening Services",
         "description": "That page could not be found. Browse our gardening services or call 0420 462 848.",
         "noindex": True,
-        "og_photo": "photo1",
+        "og_photo": "laid-turf",
         "og_alt": "Green Fern Gardening Services",
         "schema": [],
     }
