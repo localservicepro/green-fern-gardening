@@ -76,6 +76,33 @@ The GHL external tracking script (`tk_eae768369958426d9896d163c30864d9`) is alre
 site-wide from `build/layout.py`, so attribution is captured on every page including the
 thank-you redirect.
 
+## Terms pages (unlisted)
+
+Three pages carry the terms that go with quotes and invoices:
+
+| URL | Page title | Source document |
+| --- | --- | --- |
+| `/terms/once-off/` | Residential Terms - Once-Off Work | `Green_Fern_Residential_Terms_Once_Off.docx` |
+| `/terms/maintenance/` | Residential Terms - Ongoing Maintenance | `Green_Fern_Residential_Terms_Maintenance.docx` |
+| `/terms/commercial/` | Commercial Terms - Ongoing Services | `Green_Fern_Commercial_Terms_Ongoing.docx` |
+
+They are **unlisted on purpose**: no link from the nav, the footer or any other page,
+excluded from `sitemap.xml`, and served `noindex, follow`. Only someone with the link
+reaches them. They are deliberately *not* blocked in `robots.txt` — a disallowed page
+can't be crawled, so Google would never see the `noindex` and could still list the URL.
+
+**The wording is verbatim and must stay that way.** `build/terms_content.py` was generated
+directly from the Word documents' XML, not retyped, and the build renders it unchanged.
+The "Client: [CLIENT NAME] / Quote no:" line is omitted from the two residential
+documents at the client's request — it belongs on the Word versions only.
+
+To update the terms, get the new `.docx`, regenerate `build/terms_content.py` from it
+rather than editing the file by hand, bump `LAST_UPDATED`, and re-run the build. A
+paragraph-by-paragraph diff against the source document is the check that matters.
+
+The pages also carry print styles, so a client can print or save one to PDF cleanly from
+the browser.
+
 ## Content integrity
 
 Two rules this repo enforces, both from client corrections:

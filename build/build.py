@@ -17,7 +17,8 @@ ROOT = os.path.dirname(HERE)
 sys.path.insert(0, HERE)
 
 from gfdata import SITE_URL, SERVICES  # noqa: E402
-import page_home, page_services, page_static, service_content  # noqa: E402
+import page_home, page_services, page_static, page_terms, service_content  # noqa: E402
+from terms_content import TERMS  # noqa: E402
 
 
 def write(rel_path, content):
@@ -40,6 +41,11 @@ def main():
     write("contact/index.html", page_static.build_contact())
     write("thank-you/index.html", page_static.build_thank_you())
     write("404.html", page_static.build_404())
+
+    # Terms pages: linked from quotes and invoices only. Deliberately absent from
+    # the nav, the footer and sitemap.xml, and served noindex.
+    for slug in TERMS:
+        write("terms/%s/index.html" % slug, page_terms.build(slug))
 
     # ---- robots.txt ----
     write("robots.txt", """User-agent: *
@@ -72,7 +78,7 @@ Sitemap: {site}/sitemap.xml
         "http://www.w3.org/1999/xhtml/sitemap-placeholder",
         "http://www.sitemaps.org/schemas/sitemap/0.9"))
 
-    print("Done. %d pages." % (9,))
+    print("Done. %d indexable pages, %d unlisted terms pages." % (9, len(TERMS)))
 
 
 if __name__ == "__main__":

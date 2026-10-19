@@ -626,3 +626,37 @@ body.modal-open{overflow:hidden}
 .section--deep .area-note{color:var(--fern-300)}
 .area-list .area-main{background:var(--fern-600);border-color:var(--fern-600);color:#fff}
 .section--deep .area-list .area-main{background:var(--fern-500);border-color:var(--fern-400);color:#fff}
+
+/* ---------- Terms pages ---------- */
+.terms{max-width:68ch}
+.terms h2{
+  font-size:clamp(1.12rem,2.4vw,1.3rem);margin:2.1em 0 .7em;
+  padding-top:1.5em;border-top:1px solid var(--line);
+}
+.terms h2:first-of-type{margin-top:1.4em}
+.terms p{font-size:1rem;line-height:1.72}
+.terms .terms-subtitle{
+  font-size:.96rem;color:var(--ink-3);font-style:italic;
+  margin-bottom:1.6em;padding-bottom:1.3em;border-bottom:1px solid var(--line);
+}
+.terms-updated{
+  margin-top:2.6em;padding-top:1.3em;border-top:1px solid var(--line);
+  font-size:.9rem;color:var(--ink-3);font-weight:600;
+}
+.terms-contact{
+  margin-top:40px;padding:24px 26px;background:var(--fern-50);
+  border:1px solid var(--fern-100);border-radius:var(--radius-lg);max-width:68ch;
+}
+.terms-contact h2{font-size:1.05rem;margin-bottom:.4em;border:0;padding:0}
+.terms-contact p{font-size:.97rem;margin:0}
+@media print{
+  .site-header,.site-footer,.modal,.terms-contact,.skip-link{display:none!important}
+  body{font-size:11pt;color:#000}
+  .page-head{background:none!important;color:#000;padding:0}
+  .page-head h1,.page-head .eyebrow{color:#000}
+  .page-head::after,.page-head::before{display:none}
+  .section{padding-block:0}
+  .terms,.terms-contact{max-width:none}
+  .terms h2{page-break-after:avoid}
+  .terms p{page-break-inside:avoid}
+}
