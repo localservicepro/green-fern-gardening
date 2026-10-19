@@ -49,7 +49,7 @@ def build(slug):
 
     html_parts = [L.head(page), L.header("")]
     html_parts.append('<main id="main">\n')
-    html_parts.append("""<div class="page-head">
+    html_parts.append("""<div class="page-head page-head--doc">
   <div class="wrap page-head-inner">
     <div class="page-head-copy">
       <span class="eyebrow">{business}</span>
