@@ -3,12 +3,18 @@
  */
 window.GF_CONFIG = {
 
-  /* ghlEndpoint: the URL the quote form POSTs to as JSON. Use either
-   *   - a GoHighLevel inbound webhook trigger URL, or
-   *   - your own endpoint that forwards to the GHL contacts API.
-   * Leave it empty and the form tells visitors to call instead of failing
-   * silently — but note that while it is empty NO form submission happens and
-   * nobody reaches /thank-you/, so there is nothing for Ads to count. */
+  /* How a quote form submission reaches the CRM.
+   *
+   *   'tracking-script' (current) — the GoHighLevel external tracking script
+   *       loaded in <head> captures the submit event and creates the contact.
+   *       Nothing else to configure. Confirmed working by test submission.
+   *
+   *   'webhook' — the form POSTs the fields as JSON to ghlEndpoint below.
+   *       Only needed if the tracking script stops doing the capture.
+   */
+  leadCapture: 'tracking-script',
+
+  /* Only read when leadCapture is 'webhook'. */
   ghlEndpoint: '',
 
   thankYouPath: '/thank-you/',

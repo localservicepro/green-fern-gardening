@@ -98,8 +98,31 @@ Use **either** `formConversionLabel` **or** a page-load conversion on `/thank-yo
 Ads UI — not both, or submissions are counted twice.
 
 **The GoHighLevel tracking script and gtag.js do not conflict** — separate libraries, no
-shared globals. But note that while `ghlEndpoint` is empty the form never submits and
-nobody reaches `/thank-you/`, so there is nothing for either to record.
+shared globals.
+
+## How a quote form submission reaches the CRM
+
+`GF_CONFIG.leadCapture` in `assets/js/config.js` selects one of two modes:
+
+- **`'tracking-script'` (current).** The GoHighLevel external tracking script loaded in
+  `<head>` captures the submit event itself and creates the contact — confirmed by a live
+  test submission. Our handler calls `preventDefault()` but deliberately **never**
+  `stopPropagation()`, so that listener still runs. We only validate, fire the conversion
+  and redirect. No webhook URL is needed.
+- **`'webhook'`.** The form POSTs the fields as JSON to `ghlEndpoint`. Only needed if the
+  tracking script stops doing the capture.
+
+Two consequences of the tracking-script mode worth knowing:
+
+- **There is no success signal.** The script gives no callback, so the redirect runs on a
+  700ms timer rather than on confirmation. If the script is ever blocked — ad blockers do
+  block `link.msgsndr.com` — the visitor still gets the thank-you page and the enquiry is
+  lost silently. Switching to `'webhook'` is the belt-and-braces fix if that becomes a
+  concern.
+- **The honeypot is only best-effort now.** Because the submit event propagates, a bot
+  that fills the hidden field can still be captured. We call `stopPropagation()` on those
+  submissions, which defeats a listener in the bubble phase but not one registered at the
+  document in the capture phase. Keep GoHighLevel's own spam filtering on.
 
 ## Terms pages (unlisted)
 

@@ -137,13 +137,26 @@
        property_size    -> {{contact.property_size}}
        service_needed   -> {{contact.service_needed}}
        job_notes        -> {{contact.job_notes}}
-     Set the endpoint once in assets/js/config.js (window.GF_CONFIG.ghlEndpoint). */
+     Two capture modes, set by GF_CONFIG.leadCapture in assets/js/config.js:
+
+       'tracking-script' (default) — the GoHighLevel external tracking script
+         captures the submit event itself and creates the contact. We call
+         preventDefault() but never stopPropagation(), so its listener still
+         runs; we just handle validation and the redirect.
+
+       'webhook' — we POST the fields as JSON to GF_CONFIG.ghlEndpoint. Use this
+         only if the tracking script is not doing the capture. */
   Array.prototype.forEach.call(document.querySelectorAll('.quote-form'), function (form) {
     var status = form.querySelector('.form-status');
     var submitBtn = form.querySelector('[type="submit"]');
     var cfg = window.GF_CONFIG || {};
     var endpoint = cfg.ghlEndpoint || form.getAttribute('data-endpoint') || '';
     var thankYou = form.getAttribute('data-thank-you') || '/thank-you/';
+    var captureMode = cfg.leadCapture === 'webhook' ? 'webhook' : 'tracking-script';
+    // Breathing room so the capture and conversion requests leave before the
+    // page unloads. The tracking script gets longer: unlike the webhook POST,
+    // it gives us no completion signal to wait on.
+    var settleMs = captureMode === 'webhook' ? 150 : 700;
 
     function setError(field, message) {
       field.setAttribute('aria-invalid', 'true');
@@ -172,7 +185,15 @@
 
       // Honeypot — silently succeed for bots.
       var hp = form.querySelector('input[name="company_website"]');
-      if (hp && hp.value) { window.location.href = thankYou; return; }
+      if (hp && hp.value) {
+        // Best effort at keeping spam out of the CRM: this stops a capture
+        // script listening in the bubble phase, but not one listening at the
+        // document in the capture phase, which runs before us. Keep spam
+        // filtering switched on in GoHighLevel as well.
+        e.stopPropagation();
+        window.location.href = thankYou;
+        return;
+      }
 
       var invalid = null;
       Array.prototype.forEach.call(form.querySelectorAll('[required]'), function (field) {
@@ -189,7 +210,7 @@
         return;
       }
 
-      if (!endpoint) {
+      if (captureMode === 'webhook' && !endpoint) {
         showStatus('This form is not connected yet. Please call 0420 462 848 and we will book you in.');
         return;
       }
@@ -200,6 +221,18 @@
         submitBtn.textContent = 'Sending…';
       }
       if (status) status.className = 'form-status';
+
+      function finish() {
+        adsConversion(ads.formConversionLabel);
+        setTimeout(function () { window.location.href = thankYou; }, settleMs);
+      }
+
+      if (captureMode === 'tracking-script') {
+        // The submit event has already propagated to the tracking script's own
+        // listener; all that is left for us is the conversion and the redirect.
+        finish();
+        return;
+      }
 
       var payload = {};
       new FormData(form).forEach(function (value, key) {
@@ -213,11 +246,7 @@
         body: JSON.stringify(payload)
       }).then(function (res) {
         if (!res.ok) throw new Error('Request failed with status ' + res.status);
-        // Report the conversion before leaving the page, but redirect either
-        // way — a blocked tag must never strand someone on the form.
-        adsConversion(ads.formConversionLabel, function () {
-          window.location.href = thankYou;
-        });
+        finish();
       }).catch(function () {
         if (submitBtn) {
           submitBtn.disabled = false;
