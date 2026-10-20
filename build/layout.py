@@ -4,7 +4,7 @@
 from forms import quote_modal
 from gfdata import (SITE_URL, BUSINESS, PHONE, PHONE_E164, EMAIL, ABN, ADDRESS_PUBLIC,
                     SUBURBS, MAIN_SUBURBS, SERVICES, GHL_TRACKING_ID, GHL_TRACKING_SRC,
-                    img, jsonld)
+                    GOOGLE_ADS_ID, img, jsonld)
 
 # Critical CSS: everything needed to paint the header and hero without waiting
 # for the stylesheet. The full sheet loads asynchronously below it.
@@ -116,7 +116,17 @@ def head(page):
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <link rel="mask-icon" href="/favicon.svg" color="#0d2b1d">
 <link rel="preconnect" href="https://lh3.googleusercontent.com" crossorigin>
+<link rel="preconnect" href="https://www.googletagmanager.com">
 <link rel="dns-prefetch" href="https://link.msgsndr.com">
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id={ads_id}"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){{dataLayer.push(arguments);}}
+  gtag('js', new Date());
+  gtag('config', '{ads_id}');
+</script>
 
 <style>{critical}</style>
 <link rel="preload" href="/assets/css/site.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
@@ -138,6 +148,7 @@ def head(page):
         og_title=page.get("og_title", page["title"]),
         og_image=og_image,
         og_alt=page.get("og_alt", BUSINESS + " grounds maintenance crew in Melbourne's north"),
+        ads_id=GOOGLE_ADS_ID,
         critical=CRITICAL_CSS.strip(),
         ghl_src=GHL_TRACKING_SRC,
         ghl_id=GHL_TRACKING_ID,

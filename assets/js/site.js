@@ -91,6 +91,43 @@
     Array.prototype.forEach.call(revealables, function (el) { io.observe(el); });
   }
 
+
+  /* ---------------- Google Ads conversions ----------------
+     The account tag is loaded in <head>. These fire the individual conversion
+     actions; each needs its label set in config.js. With no label, or with the
+     tag blocked, this is a silent no-op — it must never get in the way of the
+     visitor placing a call or submitting the form. */
+  var ads = (window.GF_CONFIG || {}).googleAds || {};
+
+  function adsConversion(label, done) {
+    var finished = false;
+    function finish() {
+      if (finished) return;
+      finished = true;
+      if (done) done();
+    }
+    if (typeof window.gtag !== 'function' || !ads.id || !label) {
+      finish();
+      return;
+    }
+    window.gtag('event', 'conversion', {
+      send_to: ads.id + '/' + label,
+      event_callback: finish
+    });
+    // Never let a slow or blocked tag hold anything up.
+    setTimeout(finish, 1000);
+  }
+
+  /* Phone links. Tapping tel: opens the dialer without unloading the page, so
+     there is no navigation to delay — fire and let the call proceed. */
+  document.addEventListener('click', function (e) {
+    var target = e.target;
+    if (!target || typeof target.closest !== 'function') return;
+    var link = target.closest('a[href^="tel:"]');
+    if (!link) return;
+    adsConversion(ads.callConversionLabel);
+  });
+
   /* ---------------- Quote form → GoHighLevel ----------------
      Field names map 1:1 to the GHL contact fields:
        full_name        -> {{contact.full_name}}
@@ -176,7 +213,11 @@
         body: JSON.stringify(payload)
       }).then(function (res) {
         if (!res.ok) throw new Error('Request failed with status ' + res.status);
-        window.location.href = thankYou;
+        // Report the conversion before leaving the page, but redirect either
+        // way — a blocked tag must never strand someone on the form.
+        adsConversion(ads.formConversionLabel, function () {
+          window.location.href = thankYou;
+        });
       }).catch(function () {
         if (submitBtn) {
           submitBtn.disabled = false;

@@ -21,6 +21,10 @@ ADDRESS_PUBLIC = "Craigieburn VIC 3064"
 LAT = "-37.5991"
 LON = "144.9407"
 
+# Google Ads account tag. Conversion *labels* are runtime values and live in
+# assets/js/config.js; only the account id is needed to emit the tag itself.
+GOOGLE_ADS_ID = "AW-18361639983"
+
 # GoHighLevel external tracking snippet (supplied by the client).
 GHL_TRACKING_ID = "tk_eae768369958426d9896d163c30864d9"
 GHL_TRACKING_SRC = "https://link.msgsndr.com/js/external-tracking.js"

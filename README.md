@@ -76,6 +76,31 @@ The GHL external tracking script (`tk_eae768369958426d9896d163c30864d9`) is alre
 site-wide from `build/layout.py`, so attribution is captured on every page including the
 thank-you redirect.
 
+## Tracking
+
+**Google Ads tag.** `AW-18361639983` is emitted as gtag.js high in `<head>` on every page,
+including `/thank-you/` and the unlisted terms pages. The account id lives in
+`build/gfdata.py` as `GOOGLE_ADS_ID`.
+
+**Conversions** are wired in `assets/js/site.js` and configured in `assets/js/config.js`:
+
+| Conversion | Fires | Config key |
+| --- | --- | --- |
+| Phone click | Any `a[href^="tel:"]` — header, hero, CTA bands, footer | `googleAds.callConversionLabel` |
+| Quote form | On a successful submit, immediately before the `/thank-you/` redirect | `googleAds.formConversionLabel` |
+
+Paste in only the label — the part after the slash in `AW-18361639983/AbC-D_efG…`. With a
+label empty that conversion silently does nothing; with the tag blocked, `adsConversion()`
+falls through on a 1-second timeout. Neither can stop a call being placed or a form being
+submitted.
+
+Use **either** `formConversionLabel` **or** a page-load conversion on `/thank-you/` in the
+Ads UI — not both, or submissions are counted twice.
+
+**The GoHighLevel tracking script and gtag.js do not conflict** — separate libraries, no
+shared globals. But note that while `ghlEndpoint` is empty the form never submits and
+nobody reaches `/thank-you/`, so there is nothing for either to record.
+
 ## Terms pages (unlisted)
 
 Three pages carry the terms that go with quotes and invoices:
