@@ -84,18 +84,28 @@ including `/thank-you/` and the unlisted terms pages. The account id lives in
 
 **Conversions** are wired in `assets/js/site.js` and configured in `assets/js/config.js`:
 
-| Conversion | Fires | Config key |
-| --- | --- | --- |
-| Phone click | Any `a[href^="tel:"]` — header, hero, CTA bands, footer | `googleAds.callConversionLabel` |
-| Quote form | On a successful submit, immediately before the `/thank-you/` redirect | `googleAds.formConversionLabel` |
+| Conversion | Fires | Config key | Status |
+| --- | --- | --- | --- |
+| Phone click | Any `a[href^="tel:"]` — header, hero, CTA bands, footer | `googleAds.call` | Live: `_prRCKGs-qIdEK_IwbNE`, value 1.0 AUD |
+| Quote form | On a successful submit, just before the `/thank-you/` redirect | `googleAds.form` | **Intentionally empty** |
 
-Paste in only the label — the part after the slash in `AW-18361639983/AbC-D_efG…`. With a
-label empty that conversion silently does nothing; with the tag blocked, `adsConversion()`
-falls through on a 1-second timeout. Neither can stop a call being placed or a form being
-submitted.
+`googleAds.form.label` is empty **on purpose**. The form conversion is configured in Google
+Ads as a page-load conversion on `/thank-you/`. Setting a label here as well would fire a
+second conversion on submit and count every enquiry twice. Only fill it in if that Ads
+conversion is switched from a page load to an event.
 
-Use **either** `formConversionLabel` **or** a page-load conversion on `/thank-you/` in the
-Ads UI — not both, or submissions are counted twice.
+Each entry takes `{ label, value, currency }`; `value`/`currency` are optional and omitted
+from the event when `value` isn't a number. The label is the part after the slash in
+`AW-18361639983/AbC-D_efG…`. With a label empty that conversion silently does nothing; with
+the tag blocked, `adsConversion()` falls through on a 1-second timeout. Neither can stop a
+call being placed or a form being submitted.
+
+**Don't paste Google's own tel: snippet into the pages.** `site.js` already has a delegated
+`tel:` listener, so adding the snippet as well would fire two conversions per tap. Supply
+the label here instead.
+
+Also note that a `gtag/js` URL copied out of Gmail arrives wrapped in `https://www.google.com/url?q=…`
+click tracking. The real src is `https://www.googletagmanager.com/gtag/js?id=AW-18361639983`.
 
 **The GoHighLevel tracking script and gtag.js do not conflict** — separate libraries, no
 shared globals.

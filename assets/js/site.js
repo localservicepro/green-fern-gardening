@@ -99,21 +99,26 @@
      visitor placing a call or submitting the form. */
   var ads = (window.GF_CONFIG || {}).googleAds || {};
 
-  function adsConversion(label, done) {
+  function adsConversion(conv, done) {
     var finished = false;
     function finish() {
       if (finished) return;
       finished = true;
       if (done) done();
     }
-    if (typeof window.gtag !== 'function' || !ads.id || !label) {
+    if (typeof window.gtag !== 'function' || !ads.id || !conv || !conv.label) {
       finish();
       return;
     }
-    window.gtag('event', 'conversion', {
-      send_to: ads.id + '/' + label,
+    var params = {
+      send_to: ads.id + '/' + conv.label,
       event_callback: finish
-    });
+    };
+    if (typeof conv.value === 'number') {
+      params.value = conv.value;
+      params.currency = conv.currency || 'AUD';
+    }
+    window.gtag('event', 'conversion', params);
     // Never let a slow or blocked tag hold anything up.
     setTimeout(finish, 1000);
   }
@@ -125,7 +130,7 @@
     if (!target || typeof target.closest !== 'function') return;
     var link = target.closest('a[href^="tel:"]');
     if (!link) return;
-    adsConversion(ads.callConversionLabel);
+    adsConversion(ads.call);
   });
 
   /* ---------------- Quote form → GoHighLevel ----------------
@@ -223,7 +228,7 @@
       if (status) status.className = 'form-status';
 
       function finish() {
-        adsConversion(ads.formConversionLabel);
+        adsConversion(ads.form);
         setTimeout(function () { window.location.href = thankYou; }, settleMs);
       }
 

@@ -32,13 +32,21 @@ window.GF_CONFIG = {
   googleAds: {
     id: 'AW-18361639983',
 
-    /* Fires when a visitor taps any phone-number link or call button. */
-    callConversionLabel: '',
+    /* Phone-number taps. Fires on any tel: link on the site — header button,
+     * hero, CTA bands and footer. Label and value supplied by the client from
+     * Google Ads > Goals > Conversions. */
+    call: {
+      label: '_prRCKGs-qIdEK_IwbNE',
+      value: 1.0,
+      currency: 'AUD'
+    },
 
-    /* Fires the moment the quote form submits successfully, just before the
-     * redirect to /thank-you/. Optional: if the conversion is set up in Ads as
-     * a page-load on /thank-you/ instead, leave this empty. Don't use both, or
-     * the conversion is counted twice. */
-    formConversionLabel: ''
+    /* Quote form. Deliberately empty: the form conversion is configured in
+     * Google Ads as a page-load conversion on /thank-you/. Putting a label here
+     * as well would fire a second conversion on submit and count every enquiry
+     * twice. Only fill this in if that Ads conversion is switched to an event. */
+    form: {
+      label: ''
+    }
   }
 };
