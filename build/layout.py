@@ -4,7 +4,7 @@
 from forms import quote_modal
 from gfdata import (SITE_URL, BUSINESS, PHONE, PHONE_E164, EMAIL, ABN, ADDRESS_PUBLIC,
                     SUBURBS, MAIN_SUBURBS, SERVICES, GHL_TRACKING_ID, GHL_TRACKING_SRC,
-                    GOOGLE_ADS_ID, img, jsonld)
+                    GOOGLE_ADS_ID, PORTAL_ANALYTICS, img, jsonld)
 
 # Critical CSS: everything needed to paint the header and hero without waiting
 # for the stylesheet. The full sheet loads asynchronously below it.
@@ -87,6 +87,7 @@ def head(page):
     return """<!doctype html>
 <html lang="en-AU" class="no-js">
 <head>
+{portal_analytics}
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>{title}</title>
@@ -148,6 +149,7 @@ def head(page):
         og_title=page.get("og_title", page["title"]),
         og_image=og_image,
         og_alt=page.get("og_alt", BUSINESS + " grounds maintenance crew in Melbourne's north"),
+        portal_analytics=PORTAL_ANALYTICS,
         ads_id=GOOGLE_ADS_ID,
         critical=CRITICAL_CSS.strip(),
         ghl_src=GHL_TRACKING_SRC,

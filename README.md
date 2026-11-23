@@ -78,6 +78,21 @@ thank-you redirect.
 
 ## Tracking
 
+> **This site is generated.** Anything injected straight into the built HTML — an
+> analytics tag, a verification meta tag, a pixel — is wiped the next time
+> `build/build.py` runs, which is every content change. Tags belong in `build/`.
+> After adding one, run the build and confirm `git diff` on the HTML is empty: that
+> proves the generated output matches what is deployed.
+
+**Google Analytics 4 — `G-ZFKK470FL2`.** Injected by the Sales Brain client portal and
+mirrored in `build/gfdata.py` as `PORTAL_ANALYTICS`, kept byte-identical to the portal's
+block (markers included) so its marker-based injection stays idempotent. The block also
+fires a `generate_lead` GA4 event on `/thank-you/`, deduplicated per visit via
+`sessionStorage`. If the portal reissues the block, replace that constant rather than
+hand-editing the built pages.
+
+
+
 **Google Ads tag.** `AW-18361639983` is emitted as gtag.js high in `<head>` on every page,
 including `/thank-you/` and the unlisted terms pages. The account id lives in
 `build/gfdata.py` as `GOOGLE_ADS_ID`.

@@ -21,6 +21,25 @@ ADDRESS_PUBLIC = "Craigieburn VIC 3064"
 LAT = "-37.5991"
 LON = "144.9407"
 
+# Analytics injected by the Sales Brain client portal.
+#
+# The portal writes this block straight into the built HTML. Because this site is
+# GENERATED from build/, an injected-only tag is dropped the next time build.py
+# runs — which is every content change. It is mirrored here so a rebuild keeps it.
+#
+# Kept byte-identical to what the portal injects, markers included, so the portal's
+# marker-based injection stays idempotent. If the portal reissues the block, replace
+# this constant with the new one rather than hand-editing the built pages.
+GA4_ID = "G-ZFKK470FL2"
+
+PORTAL_ANALYTICS = r"""<!-- sales-brain:analytics -->
+<!-- sales-brain:ga -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-ZFKK470FL2"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-ZFKK470FL2');</script>
+<!-- /sales-brain:ga -->
+<script>addEventListener('load',function(){try{if(!/\/(thank-?you|thanks)(\/|$)/i.test(location.pathname)||typeof gtag!=='function')return;var k='sb-lead:'+location.pathname+location.search;if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1');gtag('event','generate_lead',{page_path:location.pathname});}catch(e){}});</script>
+<!-- /sales-brain:analytics -->"""
+
 # Google Ads account tag. Conversion *labels* are runtime values and live in
 # assets/js/config.js; only the account id is needed to emit the tag itself.
 GOOGLE_ADS_ID = "AW-18361639983"
