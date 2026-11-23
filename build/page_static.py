@@ -268,6 +268,48 @@ def build_contact():
 
 # ---------------------------------------------------------------- thank you
 
+GREETING_SCRIPT = """<script>
+/* Personalise the thank-you heading with the visitor's first name.
+   The name comes from ?name= (set by the quote form) or, if the form fell back
+   to a native post, from sessionStorage. The value is validated against a strict
+   whitelist rather than stripped, so anything carrying markup, digits or odd
+   length is discarded and the generic heading stands — and it is written with
+   textContent, so markup could not execute even if it got through. Runs inline
+   right after the heading, so there is no flash of the generic text. */
+(function () {
+  function dropNameFromUrl() {
+    try {
+      if (!location.search || !history.replaceState) return;
+      var q = new URLSearchParams(location.search);
+      if (!q.has('name')) return;
+      q.delete('name');
+      var rest = q.toString();
+      history.replaceState(null, '', location.pathname + (rest ? '?' + rest : '') + location.hash);
+    } catch (e) {}
+  }
+
+  try {
+    var raw = '';
+    try { raw = new URLSearchParams(location.search).get('name') || ''; } catch (e) {}
+    if (!raw) { try { raw = sessionStorage.getItem('gf-lead-name') || ''; } catch (e) {} }
+
+    // Always tidy the address bar, so the name is not carried into a shared or
+    // bookmarked link even when it turns out to be unusable.
+    dropNameFromUrl();
+    if (!raw) return;
+
+    var name = raw.trim().split(/\\s+/)[0];
+    if (!/^[A-Za-z\\u00C0-\\u024F][A-Za-z\\u00C0-\\u024F'\\u2019-]{1,19}$/.test(name)) return;
+    if (name === name.toUpperCase()) name = name.toLowerCase();
+    name = name.charAt(0).toUpperCase() + name.slice(1);
+
+    var h = document.getElementById('ty-heading');
+    if (h) h.textContent = 'Thanks, ' + name + ' \\u2014 we\\u2019ve got your details';
+  } catch (e) {}
+})();
+</script>"""
+
+
 def build_thank_you():
     page = {
         "path": "/thank-you/",
@@ -293,7 +335,8 @@ def build_thank_you():
       <svg viewBox="0 0 24 24" width="40" height="40" fill="none" stroke="#8fd0b0" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>
     </div>
     <span class="eyebrow">Quote request received</span>
-    <h1>Thanks — we’ve got your details</h1>
+    <h1 id="ty-heading">Thanks — we’ve got your details</h1>
+    {greeting_script}
     <p class="lede" style="margin-inline:auto">{owner} will call you shortly to confirm the details and book a free on-site walkthrough. If it is urgent, or you would rather sort it now, call <a href="tel:{e164}" style="color:#fff;text-decoration:underline">{phone}</a>.</p>
     <div class="btn-row" style="justify-content:center;margin-top:28px">
       <a class="btn btn--call" href="tel:{e164}">Call {phone}</a>
@@ -301,7 +344,7 @@ def build_thank_you():
     </div>
   </div>
 </section>
-""".format(owner="Marty", e164=PHONE_E164, phone=PHONE))
+""".format(owner="Marty", e164=PHONE_E164, phone=PHONE, greeting_script=GREETING_SCRIPT))
 
     html.append("""<section class="section">
   <div class="wrap wrap--narrow">

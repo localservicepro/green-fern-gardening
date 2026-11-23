@@ -107,6 +107,22 @@ the label here instead.
 Also note that a `gtag/js` URL copied out of Gmail arrives wrapped in `https://www.google.com/url?q=…`
 click tracking. The real src is `https://www.googletagmanager.com/gtag/js?id=AW-18361639983`.
 
+## Thank-you page personalisation
+
+`/thank-you/` greets the visitor by first name: *"Thanks, Jane — we've got your details"*.
+
+The quote form puts the first name in `sessionStorage` under `gf-lead-name` and appends
+`?name=` to the redirect, so the greeting survives both the fetch path and the native-post
+fallback. `GREETING_SCRIPT` in `build/page_static.py` reads it inline, right after the
+heading, so there is no flash of the generic text.
+
+The value is **validated against a whitelist, not stripped**: anything with markup, digits
+or an implausible length is discarded and the generic heading stands. It is written with
+`textContent`, so markup could not execute even if it got through. The `name` parameter is
+removed from the address bar on load, whether or not it was usable, so it is not carried
+into a shared or bookmarked link. With no name — a direct visit, or JavaScript off — the
+heading reads as it always did.
+
 ## Terms pages (unlisted)
 
 Three pages carry the terms that go with quotes and invoices:
