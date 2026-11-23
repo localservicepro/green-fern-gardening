@@ -133,35 +133,29 @@
     adsConversion(ads.call);
   });
 
-  /* ---------------- Quote form → GoHighLevel ----------------
-     Field names map 1:1 to the GHL contact fields:
-       full_name        -> {{contact.full_name}}
-       email            -> {{contact.email}}
-       phone            -> {{contact.phone}}
-       property_address -> {{contact.property_address}}
-       property_size    -> {{contact.property_size}}
-       service_needed   -> {{contact.service_needed}}
-       job_notes        -> {{contact.job_notes}}
-     Two capture modes, set by GF_CONFIG.leadCapture in assets/js/config.js:
+  /* ---------------- Quote form → Sales Brain → GoHighLevel ----------------
+     Every quote form posts multipart/form-data to Sales Brain (the form's
+     action), which saves the lead and puts it into the client's GoHighLevel
+     account. Field names are unchanged:
+       full_name, email, phone, property_address, property_size,
+       service_needed, job_notes
+     plus hidden source_page (the page path) and redirect (/thank-you/), and
+     the _hp_url honeypot, which Sales Brain ignores leads for.
 
-       'tracking-script' (default) — the GoHighLevel external tracking script
-         captures the submit event itself and creates the contact. We call
-         preventDefault() but never stopPropagation(), so its listener still
-         runs; we just handle validation and the redirect.
-
-       'webhook' — we POST the fields as JSON to GF_CONFIG.ghlEndpoint. Use this
-         only if the tracking script is not doing the capture. */
+     Without JS the browser posts the form and Sales Brain redirects to
+     /thank-you/. With JS we validate with visible messages, send the same
+     FormData with fetch(), then go to /thank-you/?name=<first name>. If the
+     request fails we fall back to a normal submit, so a lead is never lost. */
   Array.prototype.forEach.call(document.querySelectorAll('.quote-form'), function (form) {
     var status = form.querySelector('.form-status');
     var submitBtn = form.querySelector('[type="submit"]');
-    var cfg = window.GF_CONFIG || {};
-    var endpoint = cfg.ghlEndpoint || form.getAttribute('data-endpoint') || '';
     var thankYou = form.getAttribute('data-thank-you') || '/thank-you/';
-    var captureMode = cfg.leadCapture === 'webhook' ? 'webhook' : 'tracking-script';
-    // Breathing room so the capture and conversion requests leave before the
-    // page unloads. The tracking script gets longer: unlike the webhook POST,
-    // it gives us no completion signal to wait on.
-    var settleMs = captureMode === 'webhook' ? 150 : 700;
+    var nativeSubmit = HTMLFormElement.prototype.submit;
+
+    // With JS on, our own messages replace the browser's validation bubbles.
+    form.noValidate = true;
+    var sourceField = form.querySelector('input[name="source_page"]');
+    if (sourceField && !sourceField.value) sourceField.value = window.location.pathname;
 
     function setError(field, message) {
       field.setAttribute('aria-invalid', 'true');
@@ -185,17 +179,22 @@
       status.className = 'form-status is-error';
     }
 
+    function thankYouUrl() {
+      var nameField = form.querySelector('[name="full_name"]');
+      var first = nameField ? nameField.value.trim().split(/\s+/)[0] : '';
+      if (first) {
+        try { sessionStorage.setItem('gf-lead-name', first); } catch (err) {}
+        return thankYou + '?name=' + encodeURIComponent(first);
+      }
+      return thankYou;
+    }
+
     form.addEventListener('submit', function (e) {
       e.preventDefault();
 
-      // Honeypot — silently succeed for bots.
-      var hp = form.querySelector('input[name="company_website"]');
+      // Honeypot: bots get the thank-you page and nothing is sent.
+      var hp = form.querySelector('input[name="_hp_url"]');
       if (hp && hp.value) {
-        // Best effort at keeping spam out of the CRM: this stops a capture
-        // script listening in the bubble phase, but not one listening at the
-        // document in the capture phase, which runs before us. Keep spam
-        // filtering switched on in GoHighLevel as well.
-        e.stopPropagation();
         window.location.href = thankYou;
         return;
       }
@@ -215,11 +214,6 @@
         return;
       }
 
-      if (captureMode === 'webhook' && !endpoint) {
-        showStatus('This form is not connected yet. Please call 0420 462 848 and we will book you in.');
-        return;
-      }
-
       if (submitBtn) {
         submitBtn.disabled = true;
         submitBtn.dataset.label = submitBtn.textContent;
@@ -227,38 +221,29 @@
       }
       if (status) status.className = 'form-status';
 
+      if (sourceField) sourceField.value = window.location.pathname;
+      var data = new FormData(form);
+      var next = thankYouUrl();
+
       function finish() {
-        adsConversion(ads.form);
-        setTimeout(function () { window.location.href = thankYou; }, settleMs);
+        adsConversion(ads.form, function () { window.location.href = next; });
+      }
+      function fallback() {
+        // Let the browser post the form itself; Sales Brain redirects to /thank-you/.
+        nativeSubmit.call(form);
       }
 
-      if (captureMode === 'tracking-script') {
-        // The submit event has already propagated to the tracking script's own
-        // listener; all that is left for us is the conversion and the redirect.
-        finish();
-        return;
-      }
+      if (typeof window.fetch !== 'function') { fallback(); return; }
 
-      var payload = {};
-      new FormData(form).forEach(function (value, key) {
-        if (key !== 'company_website') payload[key] = typeof value === 'string' ? value.trim() : value;
-      });
-      payload.page_url = window.location.href;
-
-      fetch(endpoint, {
+      fetch(form.action, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
+        body: data,
+        redirect: 'manual',
+        headers: { 'Accept': 'application/json' }
       }).then(function (res) {
-        if (!res.ok) throw new Error('Request failed with status ' + res.status);
-        finish();
-      }).catch(function () {
-        if (submitBtn) {
-          submitBtn.disabled = false;
-          submitBtn.textContent = submitBtn.dataset.label || 'Get my free quote';
-        }
-        showStatus('Something went wrong sending your request. Please call 0420 462 848 and we will sort it out.');
-      });
+        if (res.ok || res.type === 'opaqueredirect' || (res.status >= 300 && res.status < 400)) finish();
+        else fallback();
+      }).catch(fallback);
     });
   });
 

@@ -2,7 +2,11 @@
 """The quote form. Rendered more than once per page (inline + modal), so every
 instance takes a prefix to keep element ids unique."""
 
-from gfdata import PHONE, PHONE_E164, SERVICES
+from gfdata import PHONE, PHONE_E164, SERVICES, LEAD_ACTION, LEAD_REDIRECT
+
+# Replaced with the page path by build.write(), so every form's hidden
+# source_page says which page the lead came from.
+SOURCE_PAGE_TOKEN = "__GF_SOURCE_PAGE__"
 
 
 def quote_form(prefix, heading="Request your free quote",
@@ -18,14 +22,17 @@ def quote_form(prefix, heading="Request your free quote",
     heading_html = ('<{hl} class="form-heading">{h}</{hl}>'.format(hl=heading_level, h=heading)
                     if heading else "")
 
-    return """<form class="{classes} quote-form" data-thank-you="/thank-you/" novalidate>
+    return """<form class="{classes} quote-form" action="{action}" method="POST" enctype="multipart/form-data" data-thank-you="/thank-you/">
   {heading}
   {intro}
+
+  <input type="hidden" name="source_page" value="{source_page}">
+  <input type="hidden" name="redirect" value="{redirect}">
 
   <!-- Honeypot: hidden from people, filled by bots. -->
   <div class="hp-field" aria-hidden="true">
     <label for="{f_hp}">Leave this field empty</label>
-    <input type="text" id="{f_hp}" name="company_website" tabindex="-1" autocomplete="off">
+    <input type="text" id="{f_hp}" name="_hp_url" tabindex="-1" autocomplete="off">
   </div>
 
   <div class="field">
@@ -89,9 +96,10 @@ def quote_form(prefix, heading="Request your free quote",
   <p class="form-note">We use your details to prepare your quote and contact you about it. No marketing lists. Prefer to talk? Call <a href="tel:{e164}">{phone}</a>.</p>
 </form>""".format(
         classes=classes,
+        action=LEAD_ACTION, redirect=LEAD_REDIRECT, source_page=SOURCE_PAGE_TOKEN,
         heading=heading_html,
         intro=intro_html,
-        f_hp=fid("company_website"), f_name=fid("full_name"), f_email=fid("email"),
+        f_hp=fid("hp_url"), f_name=fid("full_name"), f_email=fid("email"),
         f_phone=fid("phone"), f_addr=fid("property_address"), f_size=fid("property_size"),
         f_service=fid("service_needed"), f_notes=fid("job_notes"),
         service_options=service_options, e164=PHONE_E164, phone=PHONE,

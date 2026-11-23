@@ -1,22 +1,11 @@
-/* Site configuration — edit this file, nothing else, to connect the CRM and
- * Google Ads conversions. Nothing here is secret; it ships to the browser.
+/* Site configuration — edit this file, nothing else, to set the Google Ads
+ * conversions. Nothing here is secret; it ships to the browser.
  */
 window.GF_CONFIG = {
 
-  /* How a quote form submission reaches the CRM.
-   *
-   *   'tracking-script' (current) — the GoHighLevel external tracking script
-   *       loaded in <head> captures the submit event and creates the contact.
-   *       Nothing else to configure. Confirmed working by test submission.
-   *
-   *   'webhook' — the form POSTs the fields as JSON to ghlEndpoint below.
-   *       Only needed if the tracking script stops doing the capture.
-   */
-  leadCapture: 'tracking-script',
-
-  /* Only read when leadCapture is 'webhook'. */
-  ghlEndpoint: '',
-
+  /* Quote forms post to Sales Brain (the form's action attribute, set in
+   * build/gfdata.py as LEAD_ACTION), which puts each lead into GoHighLevel.
+   * There is nothing to configure here for leads. */
   thankYouPath: '/thank-you/',
 
   /* Google Ads conversions.

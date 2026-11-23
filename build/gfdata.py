@@ -44,9 +44,10 @@ PORTAL_ANALYTICS = r"""<!-- sales-brain:analytics -->
 # assets/js/config.js; only the account id is needed to emit the tag itself.
 GOOGLE_ADS_ID = "AW-18361639983"
 
-# GoHighLevel external tracking snippet (supplied by the client).
-GHL_TRACKING_ID = "tk_eae768369958426d9896d163c30864d9"
-GHL_TRACKING_SRC = "https://link.msgsndr.com/js/external-tracking.js"
+# Quote form endpoint (Sales Brain). It saves each lead and puts it into the
+# client's GoHighLevel account, then redirects to LEAD_REDIRECT.
+LEAD_ACTION = "https://app.salesbrain.com.au/api/lead/4889139c-7618-4b19-a821-81f6e8800df4"
+LEAD_REDIRECT = SITE_URL + "/thank-you/"
 
 # The four suburbs the client leads with — spread across the corridor so the
 # in-between suburbs read as covered. The full list still drives areaServed,

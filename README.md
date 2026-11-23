@@ -38,43 +38,28 @@ python3 build/build.py
 The generated HTML is committed, so the site still deploys as plain static files.
 Re-run the build after any edit under `build/` and commit the regenerated HTML.
 
-## Connecting the quote form to GoHighLevel
+## How a quote form submission reaches the CRM
 
-The form posts JSON with field names that map 1:1 to the GHL contact fields:
+Every quote form posts `multipart/form-data` to Sales Brain
+(`https://app.salesbrain.com.au/api/lead/4889139c-7618-4b19-a821-81f6e8800df4`, set as
+`LEAD_ACTION` in `build/gfdata.py`). Sales Brain saves the lead and puts it into the
+client's GoHighLevel account through its own connection (fields mapped, Lead Source and
+contact source set). There is **no GoHighLevel external tracking script and no GHL form
+embed** on the site; do not add them back.
 
-| Form field | GHL merge field |
-| --- | --- |
-| `full_name` | `{{contact.full_name}}` |
-| `email` | `{{contact.email}}` |
-| `phone` | `{{contact.phone}}` |
-| `property_address` | `{{contact.property_address}}` |
-| `property_size` | `{{contact.property_size}}` |
-| `service_needed` | `{{contact.service_needed}}` |
-| `job_notes` | `{{contact.job_notes}}` |
-
-`property_address`, `property_size`, `service_needed` and `job_notes` are custom fields —
-create them in GHL under **Settings → Custom Fields** with exactly those keys before going live.
+The fields are unchanged: `full_name`, `email`, `phone`, `property_address`,
+`property_size`, `service_needed` and `job_notes`, plus hidden `source_page` (the page
+path, filled in by `build/build.py`) and `redirect` (`https://www.greenfern.au/thank-you/`),
+and the `_hp_url` honeypot (Sales Brain ignores leads that fill it).
 
 The form is rendered twice on most pages: once in the header popup (opened by the
-**Get a free quote** button, present on every page) and once inline — in the hero on
-`/contact/`. Both instances share one handler and one endpoint; element ids are prefixed
-per instance so nothing collides.
+**Get a free quote** button, present on every page) and once inline in the hero on
+`/contact/`. Both instances share one handler; element ids are prefixed per instance.
 
-**One thing is left to do:** set the endpoint in `assets/js/config.js`:
-
-```js
-window.GF_CONFIG = {
-  ghlEndpoint: 'https://services.leadconnectorhq.com/hooks/…',  // GHL inbound webhook URL
-  thankYouPath: '/thank-you/'
-};
-```
-
-Until that is filled in, the form validates but tells visitors to call instead of failing
-silently. On success it redirects to `/thank-you/`, which is where the conversion fires.
-
-The GHL external tracking script (`tk_eae768369958426d9896d163c30864d9`) is already loaded
-site-wide from `build/layout.py`, so attribution is captured on every page including the
-thank-you redirect.
+- **Without JavaScript** the browser posts the form and Sales Brain redirects to `/thank-you/`.
+- **With JavaScript** (`assets/js/site.js`) the form validates with visible messages,
+  sends the same `FormData` with `fetch()`, then goes to `/thank-you/?name=<first name>`.
+  If the request fails it falls back to a normal post, so a lead is never lost.
 
 ## Tracking
 
@@ -121,33 +106,6 @@ the label here instead.
 
 Also note that a `gtag/js` URL copied out of Gmail arrives wrapped in `https://www.google.com/url?q=…`
 click tracking. The real src is `https://www.googletagmanager.com/gtag/js?id=AW-18361639983`.
-
-**The GoHighLevel tracking script and gtag.js do not conflict** — separate libraries, no
-shared globals.
-
-## How a quote form submission reaches the CRM
-
-`GF_CONFIG.leadCapture` in `assets/js/config.js` selects one of two modes:
-
-- **`'tracking-script'` (current).** The GoHighLevel external tracking script loaded in
-  `<head>` captures the submit event itself and creates the contact — confirmed by a live
-  test submission. Our handler calls `preventDefault()` but deliberately **never**
-  `stopPropagation()`, so that listener still runs. We only validate, fire the conversion
-  and redirect. No webhook URL is needed.
-- **`'webhook'`.** The form POSTs the fields as JSON to `ghlEndpoint`. Only needed if the
-  tracking script stops doing the capture.
-
-Two consequences of the tracking-script mode worth knowing:
-
-- **There is no success signal.** The script gives no callback, so the redirect runs on a
-  700ms timer rather than on confirmation. If the script is ever blocked — ad blockers do
-  block `link.msgsndr.com` — the visitor still gets the thank-you page and the enquiry is
-  lost silently. Switching to `'webhook'` is the belt-and-braces fix if that becomes a
-  concern.
-- **The honeypot is only best-effort now.** Because the submit event propagates, a bot
-  that fills the hidden field can still be captured. We call `stopPropagation()` on those
-  submissions, which defeats a listener in the bubble phase but not one registered at the
-  document in the capture phase. Keep GoHighLevel's own spam filtering on.
 
 ## Terms pages (unlisted)
 

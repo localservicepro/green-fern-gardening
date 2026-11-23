@@ -17,11 +17,16 @@ ROOT = os.path.dirname(HERE)
 sys.path.insert(0, HERE)
 
 from gfdata import SITE_URL, SERVICES  # noqa: E402
+from forms import SOURCE_PAGE_TOKEN  # noqa: E402
 import page_home, page_services, page_static, page_terms, service_content  # noqa: E402
 from terms_content import TERMS  # noqa: E402
 
 
 def write(rel_path, content):
+    # Quote forms carry the page they were sent from (hidden source_page).
+    if rel_path.endswith(".html"):
+        page_path = "/" + rel_path[:-len("index.html")] if rel_path.endswith("index.html") else "/" + rel_path
+        content = content.replace(SOURCE_PAGE_TOKEN, page_path)
     path = os.path.join(ROOT, rel_path)
     os.makedirs(os.path.dirname(path), exist_ok=True)
     with open(path, "w", encoding="utf-8") as fh:

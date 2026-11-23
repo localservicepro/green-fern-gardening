@@ -3,7 +3,7 @@
 
 from forms import quote_modal
 from gfdata import (SITE_URL, BUSINESS, PHONE, PHONE_E164, EMAIL, ABN, ADDRESS_PUBLIC,
-                    SUBURBS, MAIN_SUBURBS, SERVICES, GHL_TRACKING_ID, GHL_TRACKING_SRC,
+                    SUBURBS, MAIN_SUBURBS, SERVICES,
                     GOOGLE_ADS_ID, PORTAL_ANALYTICS, img, jsonld)
 
 # Critical CSS: everything needed to paint the header and hero without waiting
@@ -118,7 +118,6 @@ def head(page):
 <link rel="mask-icon" href="/favicon.svg" color="#0d2b1d">
 <link rel="preconnect" href="https://lh3.googleusercontent.com" crossorigin>
 <link rel="preconnect" href="https://www.googletagmanager.com">
-<link rel="dns-prefetch" href="https://link.msgsndr.com">
 
 <!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id={ads_id}"></script>
@@ -132,9 +131,6 @@ def head(page):
 <style>{critical}</style>
 <link rel="preload" href="/assets/css/site.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
 <noscript><link rel="stylesheet" href="/assets/css/site.css"></noscript>
-
-<!-- GoHighLevel external tracking -->
-<script src="{ghl_src}" data-tracking-id="{ghl_id}" defer></script>
 
 {schema}
 </head>
@@ -152,8 +148,6 @@ def head(page):
         portal_analytics=PORTAL_ANALYTICS,
         ads_id=GOOGLE_ADS_ID,
         critical=CRITICAL_CSS.strip(),
-        ghl_src=GHL_TRACKING_SRC,
-        ghl_id=GHL_TRACKING_ID,
         schema=schema_blocks,
     )
 

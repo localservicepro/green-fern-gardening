@@ -38,7 +38,6 @@
 <link rel="mask-icon" href="/favicon.svg" color="#0d2b1d">
 <link rel="preconnect" href="https://lh3.googleusercontent.com" crossorigin>
 <link rel="preconnect" href="https://www.googletagmanager.com">
-<link rel="dns-prefetch" href="https://link.msgsndr.com">
 
 <!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=AW-18361639983"></script>
@@ -111,9 +110,6 @@ p{margin:0 0 1.1em}
 @media (prefers-reduced-motion:reduce){[data-reveal]{opacity:1}}</style>
 <link rel="preload" href="/assets/css/site.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
 <noscript><link rel="stylesheet" href="/assets/css/site.css"></noscript>
-
-<!-- GoHighLevel external tracking -->
-<script src="https://link.msgsndr.com/js/external-tracking.js" data-tracking-id="tk_eae768369958426d9896d163c30864d9" defer></script>
 
 <script type="application/ld+json">
 {
@@ -654,14 +650,17 @@ p{margin:0 0 1.1em}
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>
     </button>
     <div class="modal-body">
-<form class="modal-form quote-form" data-thank-you="/thank-you/" novalidate>
+<form class="modal-form quote-form" action="https://app.salesbrain.com.au/api/lead/4889139c-7618-4b19-a821-81f6e8800df4" method="POST" enctype="multipart/form-data" data-thank-you="/thank-you/">
   <h2 class="form-heading"><span id="quote-modal-title">Get a free quote</span></h2>
   <p class="form-intro">Free on-site walkthrough, a straightforward quote, and a cycle agreed before we start.</p>
 
+  <input type="hidden" name="source_page" value="/services/garden-maintenance/">
+  <input type="hidden" name="redirect" value="https://www.greenfern.au/thank-you/">
+
   <!-- Honeypot: hidden from people, filled by bots. -->
   <div class="hp-field" aria-hidden="true">
-    <label for="qf-modal-company_website">Leave this field empty</label>
-    <input type="text" id="qf-modal-company_website" name="company_website" tabindex="-1" autocomplete="off">
+    <label for="qf-modal-hp_url">Leave this field empty</label>
+    <input type="text" id="qf-modal-hp_url" name="_hp_url" tabindex="-1" autocomplete="off">
   </div>
 
   <div class="field">
